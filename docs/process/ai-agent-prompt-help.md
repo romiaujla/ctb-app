@@ -7,8 +7,8 @@ Use `--help` to discover the repository-supported AI-agent prompt patterns witho
 | Prompt pattern | Behavior |
 | --- | --- |
 | `--help` | Show this help registry so engineers can discover the supported repository AI-agent prompts. |
-| `--speckit CTB-<id>` | Start the full Spec Kit delivery path for the Jira issue: resolve the issue, create or validate the Jira-linked branch, then proceed through `/specify`, `/plan`, `/tasks`, implementation, and pull request creation. |
-| `--implement CTB-<id>` | Start the implementation-only path for the Jira issue: resolve the issue, create or validate the Jira-linked branch, then skip `/specify`, `/plan`, and `/tasks` and proceed directly to implementation. |
+| `--speckit CTB-<id>` | Start the full Spec Kit delivery path for the Jira issue: resolve the issue, run `git co main && git pull` before creating a new Jira-linked branch, then create or validate the Jira-linked branch and proceed through `/specify`, `/plan`, `/tasks`, implementation, and pull request creation. |
+| `--implement CTB-<id>` | Start the implementation-only path for the Jira issue: resolve the issue, run `git co main && git pull` before creating a new Jira-linked branch, then create or validate the Jira-linked branch and skip `/specify`, `/plan`, and `/tasks` to proceed directly to implementation. |
 
 ## Registry Rules
 

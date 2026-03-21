@@ -25,7 +25,7 @@ When a user prompt is in the form `--speckit CTB-<id>` or `--implement CTB-<id>`
 
 1. Resolve the Jira issue first and use that issue as the only delivery scope unless the user explicitly broadens it.
 2. Use `docs/process/engineering-constitution.md` as the governing policy for branch naming, commits, pull requests, and release-safe metadata.
-3. Create or validate the Jira-linked branch that matches the issue type before editing files.
+3. Before creating a new Jira-linked branch, run `git co main && git pull`, then create the Jira-linked branch that matches the issue type; if the Jira-linked branch already exists, validate and use that existing branch before editing files.
 4. When a Jira-linked branch is created for the issue, transition that issue to `In Progress`.
 5. If the prompt is `--implement CTB-<id>`, skip `/specify`, `/plan`, and `/tasks` and proceed directly to implementation.
 6. If the prompt is `--speckit CTB-<id>`, begin with `/specify`, then continue in this order only: `/plan`, `/tasks`, implementation, and pull request creation.
