@@ -78,6 +78,8 @@ Suggested Jira fields or sections:
 * Risks
 * Open Questions
 
+Use `docs/process/ctb-ba-po-agent-workflow.md` for the BA / PO agent handoff structure, acceptance criteria pattern, and dependency/assumption capture rules.
+
 ### 2. Design
 
 Required before moving to `Ready for Build`:
