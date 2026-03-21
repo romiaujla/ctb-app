@@ -430,6 +430,6 @@ Mitigation:
 This document should feed:
 
 * `CTB-15` for reporting and GitHub Pages publication design in `docs/architecture/ctb-daily-reporting-and-github-pages.md`
-* `CTB-16` for local notification architecture
+* `CTB-16` for local notification architecture in `docs/architecture/ctb-local-notification-agent.md`
 * `CTB-17` for protected-path enforcement in CI/CD
 * future repo bootstrap work to create the actual workspace skeletons

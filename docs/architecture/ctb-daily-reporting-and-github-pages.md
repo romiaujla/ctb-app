@@ -47,6 +47,7 @@ Design rules:
 * `packages/reporting-core` shapes report views from canonical portfolio snapshots and simulation events
 * `apps/reporting-worker` assembles the daily report package and prepares publication artifacts
 * `apps/web` or owner-facing notifications surface links to already-published reports rather than recalculating them
+* notification transport and retry behavior are defined separately in `docs/architecture/ctb-local-notification-agent.md`
 
 ## Daily Reporting Boundary
 
