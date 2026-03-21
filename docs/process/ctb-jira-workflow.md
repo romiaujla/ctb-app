@@ -108,6 +108,8 @@ Required before moving to `Ready for Release`:
 * unresolved issues list
 * release recommendation
 
+Use `docs/process/ctb-security-agent-workflow.md` for the required security review structure, severity model, remediation expectations, and escalation notes.
+
 ### 5. Release
 
 Required before moving to `Done`:
