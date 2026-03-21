@@ -116,6 +116,8 @@ Required before moving to `Ready for Release`:
 
 Use `docs/process/ctb-security-agent-workflow.md` for the required security review structure, severity model, remediation expectations, and escalation notes.
 
+Use `docs/process/ctb-test-automation-engineer-agent-workflow.md` for the Test Automation Engineer agent validation structure, risk-tier coverage expectations, and automation-gap reporting.
+
 ### 5. Release
 
 Required before moving to `Done`:

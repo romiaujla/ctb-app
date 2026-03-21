@@ -17,6 +17,7 @@ Core repository contracts:
 * [`docs/process/ctb-ba-po-agent-workflow.md`](docs/process/ctb-ba-po-agent-workflow.md)
 * [`docs/process/ctb-solution-architect-agent-workflow.md`](docs/process/ctb-solution-architect-agent-workflow.md)
 * [`docs/process/ctb-senior-software-engineer-agent-workflow.md`](docs/process/ctb-senior-software-engineer-agent-workflow.md)
+* [`docs/process/ctb-test-automation-engineer-agent-workflow.md`](docs/process/ctb-test-automation-engineer-agent-workflow.md)
 * [`docs/process/ctb-security-agent-workflow.md`](docs/process/ctb-security-agent-workflow.md)
 * [`docs/process/ctb-cicd-validation-baseline.md`](docs/process/ctb-cicd-validation-baseline.md)
 * [`docs/process/ctb-ai-usage-and-adr-governance.md`](docs/process/ctb-ai-usage-and-adr-governance.md)
