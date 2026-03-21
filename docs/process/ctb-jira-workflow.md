@@ -90,6 +90,8 @@ Required before moving to `Ready for Build`:
 * affected integrations or contracts
 * rollout constraints
 
+Use `docs/process/ctb-solution-architect-agent-workflow.md` for the Solution Architect agent handoff structure, design note versus ADR rules, and architecture escalation expectations.
+
 ### 3. Build
 
 Required before moving to `Ready for Validation`:
