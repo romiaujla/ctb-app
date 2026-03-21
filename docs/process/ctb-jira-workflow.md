@@ -130,6 +130,8 @@ Required before moving to `Done`:
 * release owner
 * human approval record
 
+Use `docs/process/ctb-devops-platform-sre-agent-workflow.md` for the DevOps / Platform / SRE agent release handoff structure, observability expectations, and runtime-readiness criteria.
+
 ## Minimum Evidence Rules
 
 ### Before implementation
