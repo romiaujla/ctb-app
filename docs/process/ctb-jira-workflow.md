@@ -102,6 +102,8 @@ Required before moving to `Ready for Validation`:
 * test requirements
 * PR or commit reference
 
+Use `docs/process/ctb-senior-software-engineer-agent-workflow.md` for the Senior Software Engineer agent handoff structure, reviewer-note expectations, and implementation scope guardrails.
+
 ### 4. Validation
 
 Required before moving to `Ready for Release`:
