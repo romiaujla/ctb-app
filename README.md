@@ -15,6 +15,7 @@ Core repository contracts:
 * [`docs/process/ctb-jira-workflow.md`](docs/process/ctb-jira-workflow.md)
 * [`docs/process/ctb-agent-governance.md`](docs/process/ctb-agent-governance.md)
 * [`docs/process/ctb-cicd-validation-baseline.md`](docs/process/ctb-cicd-validation-baseline.md)
+* [`docs/process/ctb-ai-usage-and-adr-governance.md`](docs/process/ctb-ai-usage-and-adr-governance.md)
 * [`docs/architecture/ctb-simulator-architecture.md`](docs/architecture/ctb-simulator-architecture.md)
 * [`docs/architecture/ctb-daily-reporting-and-github-pages.md`](docs/architecture/ctb-daily-reporting-and-github-pages.md)
 * [`docs/architecture/ctb-local-notification-agent.md`](docs/architecture/ctb-local-notification-agent.md)
