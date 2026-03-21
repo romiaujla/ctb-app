@@ -118,6 +118,8 @@ Use `docs/process/ctb-security-agent-workflow.md` for the required security revi
 
 Use `docs/process/ctb-test-automation-engineer-agent-workflow.md` for the Test Automation Engineer agent validation structure, risk-tier coverage expectations, and automation-gap reporting.
 
+Use `docs/process/ctb-qa-agent-workflow.md` for the QA agent exploratory coverage format, defect reproduction expectations, and release recommendation outputs.
+
 ### 5. Release
 
 Required before moving to `Done`:
