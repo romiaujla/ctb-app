@@ -15,5 +15,6 @@ Core repository contracts:
 * [`docs/process/ctb-jira-workflow.md`](docs/process/ctb-jira-workflow.md)
 * [`docs/process/ctb-agent-governance.md`](docs/process/ctb-agent-governance.md)
 * [`docs/architecture/ctb-simulator-architecture.md`](docs/architecture/ctb-simulator-architecture.md)
+* [`docs/architecture/ctb-monorepo-structure.md`](docs/architecture/ctb-monorepo-structure.md)
 
 Reusable delivery artifacts live under [`docs/templates`](docs/templates).
