@@ -385,5 +385,5 @@ The architecture in this document should directly feed:
 
 * `CTB-14` monorepo structure and domain ownership
 * `CTB-15` daily P&L reporting and GitHub Pages publication design in `docs/architecture/ctb-daily-reporting-and-github-pages.md`
-* `CTB-16` local notification agent design
+* `CTB-16` local notification agent design in `docs/architecture/ctb-local-notification-agent.md`
 * future implementation stories for market data adapters, simulation engine, and ledger services
