@@ -26,6 +26,7 @@ Core repository contracts:
 * [`docs/process/ctb-security-baseline.md`](docs/process/ctb-security-baseline.md)
 * [`docs/process/ctb-cicd-validation-baseline.md`](docs/process/ctb-cicd-validation-baseline.md)
 * [`docs/process/ctb-validation-matrix.md`](docs/process/ctb-validation-matrix.md)
+* [`docs/process/ctb-release-readiness-gates.md`](docs/process/ctb-release-readiness-gates.md)
 * [`docs/process/ctb-ai-usage-and-adr-governance.md`](docs/process/ctb-ai-usage-and-adr-governance.md)
 * [`docs/architecture/ctb-simulator-architecture.md`](docs/architecture/ctb-simulator-architecture.md)
 * [`docs/architecture/ctb-market-data-event-contract.md`](docs/architecture/ctb-market-data-event-contract.md)
