@@ -384,7 +384,7 @@ Mitigation:
 The architecture in this document should directly feed:
 
 * `CTB-42` canonical simulator domain model and persistence boundaries in `docs/architecture/ctb-simulator-domain-model-and-persistence-boundaries.md`
-* `CTB-43` simulator accounting, portfolio snapshot, and event-history model work
+* `CTB-43` simulator accounting, portfolio snapshot, and event-history model work in `docs/architecture/ctb-simulator-accounting-and-event-history-model.md`
 * `CTB-44` deterministic and replay-safe simulator-core policy and correctness-focused test direction
 * `CTB-45` canonical market data contract and normalization boundaries in `docs/architecture/ctb-market-data-event-contract.md`
 * `CTB-46` freshness, stale-data handling, and failure visibility rules
