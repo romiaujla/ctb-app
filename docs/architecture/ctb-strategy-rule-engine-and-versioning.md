@@ -10,6 +10,8 @@ It is the implementation-ready architecture baseline for `CTB-49`.
 
 `CTB-48` defined the canonical strategy input contract. CTB now needs explicit strategy logic that turns those inputs into simulated trade intents in a way that is explainable, versioned, and separated from simulator execution.
 
+The initial business-intent baseline for that logic is defined in `docs/architecture/ctb-v1-strategy-hypothesis.md`.
+
 ## Decision
 
 CTB will treat the v1 strategy engine as explicit business logic that:
@@ -186,3 +188,7 @@ This document should directly feed:
 Related follow-on baseline:
 
 * `docs/architecture/ctb-strategy-output-and-explainability.md`
+
+Related upstream baseline:
+
+* `docs/architecture/ctb-v1-strategy-hypothesis.md`
