@@ -163,6 +163,123 @@ Each event should include:
 
 Deduplication keys should be stable for logically identical alerts so retries do not create duplicate owner messages.
 
+## Canonical Notification Event Model
+
+Notification events should be modeled as canonical downstream facts, not transport commands.
+
+Event-model rules:
+
+* simulator and reporting domains own when a noteworthy condition exists
+* notification-core owns how that condition maps to owner-facing alert classes
+* notification-worker owns when and how delivery attempts are executed
+* transport adapters must never invent new notification semantics
+
+Each canonical notification event should carry:
+
+* stable event id
+* event class
+* source workflow and source record id when available
+* occurred timestamp
+* severity
+* deduplication key
+* canonical payload
+* recommended alert class
+* evidence requirements for downstream delivery logging
+
+### Event Class Definitions
+
+#### `dailyReportPublished`
+
+Purpose:
+
+* represent a validated report publication that is eligible for owner delivery
+
+Required payload fields:
+
+* report date
+* publication status
+* dated report URL
+* history index URL
+* daily outcome summary
+* artifact id
+
+Deduplication intent:
+
+* one logical event per report date and publication version
+
+#### `dailyReportFailed`
+
+Purpose:
+
+* represent a report run that ended in `partial` or `failed` state and requires owner visibility
+
+Required payload fields:
+
+* report date
+* failure stage
+* failure classification
+* short reason
+* retry expectation
+
+Deduplication intent:
+
+* one logical event per report date, stage, and unchanged failure classification
+
+#### `portfolioThresholdBreached`
+
+Purpose:
+
+* represent a portfolio-level change that exceeded configured alert thresholds
+
+Required payload fields:
+
+* trigger timestamp
+* baseline timestamp
+* net liquidation value
+* absolute change
+* percentage change
+* threshold band
+
+Deduplication intent:
+
+* suppress repeated alerts for the same threshold band and direction during the cooldown window
+
+#### `workflowCriticalFailure`
+
+Purpose:
+
+* represent a blocked operational state that threatens expected CTB progress
+
+Required payload fields:
+
+* workflow name
+* severity
+* short error summary
+* next automatic action
+* incident state
+
+Deduplication intent:
+
+* treat one unresolved incident as one active notification subject until state changes materially
+
+#### `notificationDeliveryFailed`
+
+Purpose:
+
+* represent failure of the notification system itself so delivery-health issues stay observable
+
+Required payload fields:
+
+* notification id
+* failed adapter
+* failure classification
+* attempt count
+* next retry or terminal outcome
+
+Deduplication intent:
+
+* one logical event per notification id and terminally changed delivery state
+
 ## Message Classes and Formatting
 
 Owner-facing messages should prioritize speed and clarity.
@@ -181,6 +298,25 @@ Recommended classes:
 * `report-warning`
 * `pnl-alert`
 * `critical-error`
+
+## Message Class Mapping Rules
+
+Message classes should stay stable even as transport implementations evolve.
+
+Mapping guidance:
+
+* `dailyReportPublished` -> `report-success`
+* `dailyReportFailed` with `partial` outcome -> `report-warning`
+* `dailyReportFailed` with `failed` outcome -> `critical-error` or `report-warning` depending on severity
+* `portfolioThresholdBreached` -> `pnl-alert`
+* `workflowCriticalFailure` -> `critical-error`
+* `notificationDeliveryFailed` -> internal delivery evidence first, owner-facing escalation only when repeated failure blocks communication materially
+
+Mapping rules:
+
+* message class selection should be deterministic from the event class and severity
+* alert templates may vary in wording, but class semantics should not
+* message shaping must consume canonical event payloads and may not recompute business facts
 
 Example shapes:
 
@@ -255,6 +391,50 @@ Recommended retry policy:
 * classify final outcome as `sent`, `suppressed`, `failed-transient`, or `failed-permanent`
 
 If SMTP acceptance succeeds but final carrier delivery cannot be confirmed, the system should record the result as `sent-to-gateway` rather than pretending end-device delivery is guaranteed.
+
+## Delivery Evidence Contract
+
+Every notification attempt should leave one reviewable evidence trail.
+
+Required evidence fields:
+
+* notification id
+* source event id
+* event class
+* alert class
+* deduplication key
+* destination label or redacted target
+* adapter name
+* attempt number
+* attempt timestamp
+* outcome status
+* outcome reason or provider response summary
+* final status timestamp when terminal
+
+Evidence rules:
+
+* evidence should be append-only so retries are auditable
+* terminal outcomes should preserve the full attempt count
+* suppressed notifications should still leave evidence that explains why no send occurred
+* evidence records should be structured enough for downstream observability summaries and debugging
+
+## Retry and Dedupe Policy Intent
+
+Retry and dedupe policy should be explicit before transport implementation begins.
+
+Dedupe intent:
+
+* deduplication keys should represent logical alert identity, not individual transport attempts
+* retries must reuse the same deduplication key as the original send attempt
+* a materially changed event state should generate a new deduplication key or versioned state
+* identical unchanged events should be suppressed within the applicable cooldown window
+
+Retry intent:
+
+* retry only when the failure class is plausibly transient
+* configuration or validation failures should become terminal quickly and surface as workflow issues
+* retry state should remain visible in delivery evidence and downstream observability outputs
+* final terminal failure should preserve both the original event identity and the delivery outcome classification
 
 ## Rate Limiting and Suppression
 
