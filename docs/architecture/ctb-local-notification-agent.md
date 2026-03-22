@@ -611,12 +611,53 @@ Required configuration:
 * P&L threshold settings
 * cooldown settings
 
+## Transport Configuration Contract
+
+Notification transport configuration should be explicit, typed, and security-reviewed before the worker attempts delivery.
+
+Required transport fields:
+
+* transport adapter name
+* SMTP or relay host
+* SMTP or relay port
+* sender identity
+* authentication mode
+* credential reference location
+* destination routing target
+* enabled message classes
+* timeout and retry policy settings
+
+Configuration rules:
+
+* configuration parsing should fail closed when required delivery fields are missing or malformed
+* secrets should be referenced through environment variables or an owner-local secret store rather than committed files
+* destination routing and credential values should be redacted from normal logs and evidence outputs
+* non-secret transport settings should still be typed and validated so misconfiguration is visible before runtime delivery begins
+
 Security rules:
 
 * store credentials in local environment variables or a local secret manager, not in Git
 * treat owner phone-routing details as sensitive contact data
 * validate all required settings at startup and fail closed when critical settings are missing
 * redact secrets and contact identifiers from logs unless explicitly needed for debugging
+
+## Template Validation Baseline
+
+Notification templates should be validated before delivery attempts are allowed.
+
+Validation expectations:
+
+* every alert class should define the required canonical fields it expects
+* template rendering should fail explicitly when required fields are absent
+* rendered output should remain short, clear, and safe for SMS-friendly delivery
+* rendered messages should be checked for accidental secret leakage, raw payload leakage, or unresolved placeholder tokens
+
+Template-validation rules:
+
+* template validation should happen before adapter submission, not after transport failure
+* a template validation failure should be classified separately from provider transport failure
+* invalid template output should produce delivery evidence and a visible workflow issue for follow-up
+* class-specific template checks should be strong enough that later automation can test them deterministically
 
 ## Failure Handling
 
@@ -635,6 +676,21 @@ Required handling:
 * classify the failure cause
 * retry only when the failure is plausibly transient
 * record the final outcome in a delivery log or artifact
+
+### Template or validation failures
+
+Examples:
+
+* required event fields missing for a message class
+* unresolved placeholder token remains in rendered output
+* message body exceeds acceptable transport or readability limits materially
+
+Required handling:
+
+* classify as a pre-send validation failure
+* do not attempt transport dispatch for invalid output
+* record the failure in delivery evidence with the blocking validation reason
+* surface a workflow issue when invalid templates block required owner notifications
 
 ### Upstream workflow failures
 
@@ -689,6 +745,58 @@ Recommended evidence outputs:
 * append-only local delivery log
 * structured JSON delivery records for debugging and audits
 * daily summary counts of sent, suppressed, and failed notifications
+
+## Delivery Audit Contract
+
+Delivery evidence should support both debugging and operational trust.
+
+Audit record expectations:
+
+* preserve one append-only record per attempt and terminal notification outcome
+* retain enough metadata to correlate a notification back to the source event, worker decision, and transport result
+* keep sensitive routing or credential values redacted while preserving enough context for troubleshooting
+
+Minimum audit fields:
+
+* notification id
+* source event id
+* event class
+* alert class
+* transport adapter
+* validation status
+* attempt count
+* final delivery status
+* final failure classification when applicable
+* redacted destination label
+* timestamps for render, attempt, retry scheduling, and terminal outcome
+
+Audit rules:
+
+* suppressed notifications must still leave audit evidence with the suppression reason
+* pre-send validation failures must be distinguishable from transport failures
+* terminal delivery failures should remain queryable for observability dashboards and follow-up analysis
+* audit outputs should align with the notification-delivery dashboard expectations in `docs/process/ctb-observability-dashboards-and-alerts.md`
+
+## Transport Failure Classification
+
+Transport and validation failures should use stable classes so debugging and observability stay consistent.
+
+Recommended classes:
+
+* `validation-failed`
+* `config-invalid`
+* `auth-failed`
+* `network-transient`
+* `provider-rejected`
+* `destination-invalid`
+* `delivery-suppressed`
+
+Classification rules:
+
+* classes should be chosen before free-form error text is recorded
+* retry policy should key off the failure class, not raw provider messages
+* security-sensitive details should remain redacted even when the failure class is explicit
+* the final classification should feed both local evidence and downstream observability summaries
 
 ## Risks and Constraints
 
