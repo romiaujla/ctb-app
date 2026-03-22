@@ -399,6 +399,7 @@ Reviews repository-boundary changes that affect configuration, infrastructure, o
 
 This completed foundation baseline should feed:
 
+* `CTB-39` for the shared local Docker runtime envelope that these workspaces should assume
 * later setup stories that create the actual apps and packages inside the approved targets
 * future implementation issues that should attach work to one of the named workspaces instead of inventing new ones
 * review routing and validation planning that depends on workspace ownership intent
@@ -439,6 +440,7 @@ Mitigation:
 
 This document should feed:
 
+* `CTB-39` local runtime-stack planning for the approved CTB services
 * later repository bootstrap work that creates the approved apps and packages
 * future domain stories that need a concrete target workspace for implementation
 * CI, validation, and review routing that depends on workspace ownership intent
