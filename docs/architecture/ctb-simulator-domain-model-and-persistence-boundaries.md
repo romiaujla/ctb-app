@@ -302,6 +302,6 @@ Mitigation:
 This baseline should directly feed:
 
 * `CTB-43` for the accounting model, event-history relationship, and portfolio-state derivation rules in `docs/architecture/ctb-simulator-accounting-and-event-history-model.md`
-* `CTB-44` for determinism, replay-safe processing, and correctness-focused testing expectations
+* `CTB-44` for determinism, replay-safe processing, and correctness-focused testing expectations in `docs/architecture/ctb-simulator-determinism-replay-and-correctness-policy.md`
 * future simulator-core package implementation in `packages/simulator-core`
 * future API, reporting, and notification work that consumes canonical simulator truth
