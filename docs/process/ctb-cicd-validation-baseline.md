@@ -1,8 +1,10 @@
-# CTB CI/CD Validation Baseline and Protected-Path Rules
+# CTB Shared Tooling, Validation, and GitHub Actions Baseline
 
 ## Purpose
 
-This document defines the minimum CI/CD validation baseline for CTB and the protected-path rules that govern higher-risk changes.
+This document defines the shared tooling baseline for CTB, including planning-level expectations for TypeScript, linting, formatting, package conventions, GitHub Actions validation, and protected-path review rules.
+
+It is the implementation-ready shared tooling baseline for `CTB-37`.
 
 It builds on:
 
@@ -11,7 +13,98 @@ It builds on:
 * `docs/process/ctb-agent-governance.md`
 * `docs/templates/release-evidence-template.md`
 
-## Policy Goals
+## Baseline Goals
+
+The shared tooling baseline must:
+
+* give every future workspace one common repository convention set
+* keep TypeScript, linting, formatting, and package expectations reusable across apps and packages
+* identify the baseline GitHub Actions jobs needed for safe pull requests and merges
+* make reviewer expectations explicit before executable tooling is implemented
+* preserve a clear boundary between planning policy and later setup work
+
+## Shared Tooling Conventions
+
+### TypeScript baseline
+
+Future CTB workspaces should inherit these defaults:
+
+* TypeScript is the standard language for application and shared-package code where applicable.
+* New code should use strict mode, matching the engineering constitution.
+* Shared compiler options should be defined centrally and extended by app or package-local configs rather than copied ad hoc.
+* Path aliases, project references, or build partitioning should be introduced only when they support clear workspace boundaries rather than convenience-only coupling.
+
+Planning rule:
+
+* exact `tsconfig` file layout and build commands remain implementation work for a later setup story
+
+### Linting baseline
+
+Future CTB workspaces should inherit these defaults:
+
+* one repository-standard linting approach should apply across apps and packages
+* lint rules should prioritize correctness, readability, and unsafe-pattern detection over stylistic churn
+* shared packages and application entrypoints should not carry conflicting lint profiles unless a documented exception exists
+
+Planning rule:
+
+* the exact linter package choice and command name remain open for implementation
+
+### Formatting baseline
+
+Future CTB workspaces should inherit these defaults:
+
+* one repository formatter should control mechanical style choices
+* formatting should be automated and low-debate so reviews focus on behavior and design
+* formatting conventions should apply to code, JSON, markdown, and workflow files where practical
+
+Planning rule:
+
+* the exact formatter implementation and write-check strategy remain follow-on setup work
+
+### Package and workspace conventions
+
+Future CTB apps and packages should inherit these defaults:
+
+* every workspace should declare a clear purpose and ownership intent
+* shared packages should expose stable public surfaces rather than ad hoc deep imports
+* package scripts should follow a common shape across workspaces so root automation can invoke them predictably
+* repository-level automation should prefer shared conventions over workspace-specific exceptions
+
+Planning rule:
+
+* the concrete workspace catalog is defined in `CTB-38`, not here
+
+## GitHub Actions Baseline
+
+Future GitHub Actions implementation should provide:
+
+### 1. Pull request validation
+
+Every PR should run the repository-quality checks relevant to the changed scope, including:
+
+* formatting or markdown validation where applicable
+* linting where applicable
+* type-checking where applicable
+* automated tests for executable behavior changes where applicable
+
+### 2. Protected-path and sensitive-change validation
+
+Changes touching higher-risk repository areas should add the stronger checks and reviewer attention required by risk tier and protected-path guidance.
+
+### 3. Main-branch confidence
+
+The default branch should retain a baseline workflow that confirms merge safety and keeps foundational validation visible over time.
+
+### 4. Documentation-first practicality
+
+When automation is not yet implemented, PRs must record the manual validation substitute used so the policy remains enforceable before the full toolchain exists.
+
+Planning rule:
+
+* exact workflow files, caching strategy, matrix fan-out, and path-filter implementation remain later setup work
+
+## Validation and Protected-Path Policy
 
 The validation baseline must:
 
