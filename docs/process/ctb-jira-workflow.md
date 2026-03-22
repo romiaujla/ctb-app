@@ -226,3 +226,4 @@ A story is done when:
 * Link Confluence design artifacts directly from Jira.
 * Treat missing evidence as a blocker, not as a review suggestion.
 * Keep stage ownership explicit even when one human executes multiple stages.
+* When using a repository-supported bulk prompt such as `--bulk-spec-implement`, process issues sequentially, require merge completion for the active issue before starting the next one, and return to updated `main` between queued issues.

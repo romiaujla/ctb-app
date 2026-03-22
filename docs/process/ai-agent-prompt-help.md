@@ -9,6 +9,7 @@ Use `--help` to discover the repository-supported AI-agent prompt patterns witho
 | `--help` | Show this help registry so engineers can discover the supported repository AI-agent prompts. |
 | `--speckit CTB-<id>` | Start the full Spec Kit delivery path for the Jira issue: resolve the issue, run `git co main && git pull` before creating a new Jira-linked branch, then create or validate the Jira-linked branch and proceed through `/specify`, `/plan`, `/tasks`, implementation, and pull request creation. |
 | `--implement CTB-<id>` | Start the implementation-only path for the Jira issue: resolve the issue, run `git co main && git pull` before creating a new Jira-linked branch, then create or validate the Jira-linked branch and skip `/specify`, `/plan`, and `/tasks` to proceed directly to implementation. |
+| `--bulk-spec-implement CTB-<id>, CTB-<id>, ...` | Start the sequential multi-issue Spec Kit path: process the listed Jira issues one at a time in the order provided, run the full `--speckit` workflow for the current issue, create its PR, wait for merge checks to pass, merge it, return to `main` and pull latest, then continue to the next issue. |
 
 ## Registry Rules
 
