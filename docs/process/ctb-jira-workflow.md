@@ -90,6 +90,8 @@ Required before moving to `Ready for Build`:
 * affected integrations or contracts
 * rollout constraints
 
+Use `docs/process/ctb-ui-ux-agent-workflow.md` for the UI / UX agent handoff structure, Figma-link expectations, and accessibility and responsive design checkpoints.
+
 Use `docs/process/ctb-solution-architect-agent-workflow.md` for the Solution Architect agent handoff structure, design note versus ADR rules, and architecture escalation expectations.
 
 ### 3. Build
