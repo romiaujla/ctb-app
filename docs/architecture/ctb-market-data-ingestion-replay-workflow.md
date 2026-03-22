@@ -225,3 +225,7 @@ This document should directly feed:
 * `CTB-48` strategy input contracts built on replay-safe canonical history
 * simulator-worker implementation stories
 * historical-correctness validation scenarios
+
+Related follow-on baseline:
+
+* `docs/architecture/ctb-strategy-input-contract.md`
