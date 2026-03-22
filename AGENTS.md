@@ -17,6 +17,7 @@ This is mandatory for code changes, branch naming, commits, Jira issue updates, 
   * `--help` for prompt discovery and supported command lookup
   * `--speckit CTB-<id>` for full Spec Kit delivery
   * `--implement CTB-<id>` for implementation-only delivery
+  * `--bulk-spec-implement CTB-<id>, CTB-<id>, ...` for sequential multi-issue Spec Kit delivery with merge-gated progression
 * Keep the prompt help registry in `docs/process/ai-agent-prompt-help.md` aligned with any documented prompt behavior changes.
 
 ## Prompt-Driven Start Workflow
@@ -32,6 +33,16 @@ When a user prompt is in the form `--speckit CTB-<id>` or `--implement CTB-<id>`
 7. Pause for user clarification instead of auto-advancing when scope, requirements, repository state, validation evidence, or Jira-to-branch alignment are ambiguous or blocked.
 8. Create the final pull request only after implementation is complete, committed, and pushed, and include Jira linkage, scope, and validation notes in the PR description.
 9. When a Jira-linked pull request is created for the issue, transition that issue to `In Review`.
+
+When a user prompt is in the form `--bulk-spec-implement CTB-<id>, CTB-<id>, ...`:
+
+1. Treat the listed Jira issues as an ordered queue and execute them strictly one at a time in the order provided.
+2. For each issue in the queue, run the same full workflow required by `--speckit CTB-<id>`: resolve the issue, use it as the only active delivery scope, run `git co main && git pull` before creating a new Jira-linked branch, then create or validate the Jira-linked branch and proceed through `/specify`, `/plan`, `/tasks`, implementation, and pull request creation.
+3. Do not begin the next queued issue until the current issue has an open Jira-linked pull request, required merge checks have passed, and the pull request has been merged.
+4. After a queued issue is merged, return to `main`, pull the latest changes, and only then proceed to the next queued issue.
+5. Transition each issue to `In Progress` when its Jira-linked branch is created and to `In Review` when its Jira-linked pull request is created.
+6. Pause for user clarification instead of continuing automatically when scope, queue order, merge status, validation evidence, repository state, or Jira-to-branch alignment is ambiguous or blocked.
+7. Keep each pull request scoped only to the single Jira issue currently being processed; do not combine multiple queued issues into one branch or pull request.
 
 When a user prompt is `--help`:
 
