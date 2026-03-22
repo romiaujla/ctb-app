@@ -386,7 +386,7 @@ The architecture in this document should directly feed:
 * `CTB-45` canonical market data contract and normalization boundaries in `docs/architecture/ctb-market-data-event-contract.md`
 * `CTB-46` freshness, stale-data handling, and failure visibility rules
 * `CTB-47` replay-ready ingestion workflow and idempotent capture behavior
-* `CTB-14` monorepo structure and domain ownership
+* `CTB-36` monorepo structure baseline
 * `CTB-15` daily P&L reporting and GitHub Pages publication design in `docs/architecture/ctb-daily-reporting-and-github-pages.md`
 * `CTB-16` local notification agent design in `docs/architecture/ctb-local-notification-agent.md`
 * future implementation stories for market data adapters, simulation engine, and ledger services

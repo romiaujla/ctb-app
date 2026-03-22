@@ -1,20 +1,20 @@
-# CTB Monorepo Structure and Domain Ownership Model
+# CTB Monorepo Structure Baseline
 
 ## Purpose
 
-This document defines the initial monorepo structure for Crown Trade Bot so product apps, shared packages, simulator services, reporting, and automation can evolve without boundary drift.
+This document defines the initial monorepo structure for Crown Trade Bot so future app, package, infrastructure, and automation work lands in predictable top-level locations without repository-boundary drift.
 
-It is the implementation-ready monorepo baseline for `CTB-14`.
+It is the implementation-ready monorepo baseline for `CTB-36`.
 
 ## Monorepo Goals
 
 The CTB monorepo should:
 
 * separate business domains from platform concerns
-* keep shared contracts and utilities in reusable packages instead of duplicating them across apps
-* make ownership clear enough that agent-assisted changes stay inside defined boundaries
-* support simulator-first product architecture today and future live-execution extensions later
-* make protected paths explicit for high-risk or sensitive modules
+* make repository boundaries clear before tooling and workspace implementation begin
+* keep top-level directory choices stable so future stories do not create parallel structures
+* support the simulator-first architecture direction while remaining extensible for future phases
+* create a clean handoff into tooling work in `CTB-37` and concrete workspace planning in `CTB-38`
 
 ## Recommended Top-Level Layout
 
@@ -48,295 +48,97 @@ Architecture, process, specs, operating guides, and templates.
 
 Local workflow helpers, repository automation, validation, and bootstrap tooling.
 
-## Recommended Application Workspaces
+## Top-Level Responsibilities
 
-### `apps/web`
-
-Purpose:
-
-* operator-facing web UI
-* dashboard views
-* daily report access and links
-* settings and strategy controls
-
-Ownership:
-
-* UI / UX
-* Senior Software Engineer
-* QA
-
-### `apps/api`
+### `apps/`
 
 Purpose:
 
-* public and internal HTTP API surface
-* orchestration endpoints
-* report-read endpoints
-* control-plane workflows
+* deployable application entrypoints
+* user-facing surfaces and service runtimes
+* worker processes and externally exposed application boundaries
 
-Ownership:
+Planning rule:
 
-* Solution Architect
-* Senior Software Engineer
-* Security
+* concrete app names and ownership routing are defined later, not in this story
 
-### `apps/simulator-worker`
+### `packages/`
 
 Purpose:
 
-* market-data ingestion coordination
-* simulation event processing
-* execution-model application
-* position and portfolio updates
+* shared domain libraries
+* reusable contracts, schemas, and utilities
+* implementation building blocks consumed by one or more apps
 
-Ownership:
+Planning rule:
 
-* Solution Architect
-* Senior Software Engineer
-* Test Automation
+* package catalog decisions belong in later workspace-definition planning, not in this story
 
-### `apps/reporting-worker`
+### `infra/`
 
 Purpose:
 
-* daily P&L report generation
-* report artifact publishing preparation
-* report history and retention tasks
+* deployment assets
+* environment and CI/CD configuration
+* operational infrastructure definitions and support automation
 
-Ownership:
+Planning rule:
 
-* Senior Software Engineer
-* QA
-* DevOps / Platform / SRE
+* repository layout is defined here now, while actual tooling and pipeline design remain follow-on work
 
-### `apps/notification-worker`
+### `docs/`
 
 Purpose:
 
-* owner-facing notification delivery
-* alert formatting
-* retry and delivery-status handling
+* architecture notes
+* process baselines
+* issue-scoped specs
+* templates, operating guides, and review evidence
 
-Ownership:
+Planning rule:
 
-* Senior Software Engineer
-* Security
-* DevOps / Platform / SRE
+* docs remain a first-class workspace because CTB is still in a docs-first foundation phase
 
-## Recommended Shared Packages
-
-### `packages/types`
+### `scripts/`
 
 Purpose:
 
-* canonical shared types
-* DTOs and contracts
-* event payload definitions
+* repository bootstrap helpers
+* local development automation
+* validation and maintenance utilities
 
-Rules:
+Planning rule:
 
-* shared contracts live here once they are needed by more than one app
-* downstream apps consume, but do not redefine, shared transport types
+* script standards and exact command set belong in `CTB-37`
 
-### `packages/schemas`
+## Boundary Rules
 
-Purpose:
+### Rule 1: top-level categories stay stable
 
-* shared validation schemas
-* domain-safe parsing rules
-* event and config validation
+Future stories should place work inside the established top-level layout rather than inventing new peer directories without explicit follow-up approval.
 
-Rules:
+### Rule 2: `apps/` owns entrypoints, `packages/` owns reusable internals
 
-* external inputs should be validated here or in app-local schemas that later promote here when shared
+Deployable surfaces belong under `apps/`.
+Reusable logic and shared contracts belong under `packages/`.
 
-### `packages/market-data`
+### Rule 3: `infra/` and `scripts/` stay distinct
 
-Purpose:
+Operational infrastructure definitions belong under `infra/`.
+Developer automation and repository helper scripts belong under `scripts/`.
 
-* canonical market event models
-* provider normalization helpers
-* freshness and timestamp handling
+### Rule 4: repository shape precedes tooling and workspace catalogs
 
-Rules:
+This baseline defines the top-level structure only.
+Tooling conventions belong in `CTB-37`, and the concrete workspace set belongs in `CTB-38`.
 
-* provider adapters may depend on this package
-* simulator core consumes canonical market events only
+## Architecture Alignment
 
-### `packages/simulator-core`
+The top-level layout supports the current CTB direction by:
 
-Purpose:
-
-* trade-intent handling
-* simulation state transitions
-* fill/slippage/fee model interfaces
-* portfolio and ledger domain logic
-
-Rules:
-
-* this package is the protected simulator core
-* it must not depend on provider-specific integrations or live broker SDKs
-
-### `packages/reporting-core`
-
-Purpose:
-
-* daily summary assembly
-* P&L presentation shaping
-* report aggregation interfaces
-
-Rules:
-
-* reporting consumes canonical portfolio outputs
-* it must not duplicate portfolio accounting logic
-
-### `packages/notification-core`
-
-Purpose:
-
-* message templates
-* alert classes
-* notification payload shaping
-
-Rules:
-
-* transport adapters consume this package
-* it must not own business calculations
-
-### `packages/config`
-
-Purpose:
-
-* typed environment configuration
-* app and worker settings
-* feature flags and runtime toggles
-
-Rules:
-
-* all app configuration should be parsed and typed here or through local modules aligned to this pattern
-
-### `packages/test-utils`
-
-Purpose:
-
-* shared test fixtures
-* fake event builders
-* deterministic time helpers
-* scenario setup utilities
-
-## Domain-to-Workspace Mapping
-
-| Domain | Primary workspace(s) |
-| --- | --- |
-| market data | `apps/simulator-worker`, `packages/market-data` |
-| strategy input | `apps/api`, future strategy modules under `packages/` |
-| simulation engine | `packages/simulator-core`, `apps/simulator-worker` |
-| portfolio and ledger | `packages/simulator-core` |
-| reporting | `packages/reporting-core`, `apps/reporting-worker`, `apps/web` |
-| notifications | `packages/notification-core`, `apps/notification-worker` |
-| shared contracts | `packages/types`, `packages/schemas` |
-| configuration and runtime policy | `packages/config`, `infra/` |
-
-## Ownership Model
-
-Ownership should be explicit at two levels:
-
-### 1. Domain ownership
-
-Used for architecture, approval, and review responsibility.
-
-### 2. Workspace ownership
-
-Used for implementation and code review routing.
-
-Initial ownership model:
-
-* `apps/web`: UI / UX + Senior Software Engineer + QA
-* `apps/api`: Solution Architect + Senior Software Engineer + Security
-* `apps/simulator-worker`: Solution Architect + Senior Software Engineer + Test Automation
-* `apps/reporting-worker`: Senior Software Engineer + QA + DevOps / Platform / SRE
-* `apps/notification-worker`: Senior Software Engineer + Security + DevOps / Platform / SRE
-* `packages/simulator-core`: Solution Architect + Senior Software Engineer + Security
-* `packages/market-data`: Solution Architect + Senior Software Engineer
-* `packages/reporting-core`: Senior Software Engineer + QA
-* `packages/notification-core`: Senior Software Engineer + Security
-* `packages/types` and `packages/schemas`: Solution Architect + Senior Software Engineer
-* `infra/`: DevOps / Platform / SRE + Security
-
-## Protected Paths
-
-The following areas should be treated as protected or high-risk paths in CI and review policy.
-
-### `packages/simulator-core/**`
-
-Reason:
-
-* portfolio accounting
-* simulated execution
-* P&L integrity
-
-### `packages/market-data/**`
-
-Reason:
-
-* canonical data normalization
-* timing and freshness assumptions
-
-### `packages/reporting-core/**`
-
-Reason:
-
-* daily report correctness
-* published P&L outputs
-
-### `apps/notification-worker/**`
-
-Reason:
-
-* owner contact delivery
-* local delivery integration
-* potential secret or PII handling
-
-### `packages/config/**`
-
-Reason:
-
-* runtime behavior
-* secret and environment parsing
-
-### `infra/**`
-
-Reason:
-
-* deployment and CI/CD behavior
-* operational configuration
-
-## Shared Package Rules
-
-### Rule 1: shared contracts move down, not sideways
-
-When two or more apps need the same contract, move it into a shared package rather than copying it.
-
-### Rule 2: application code depends inward on packages
-
-Apps may depend on shared packages.
-Shared packages must not depend on app-specific code.
-
-### Rule 3: domain cores stay integration-agnostic
-
-`simulator-core`, `reporting-core`, and `notification-core` should define business logic and interfaces, not transport-specific implementations.
-
-### Rule 4: integration adapters stay at the edges
-
-Provider-specific market-data adapters, local message transport adapters, and deployment-specific integrations should live in app or edge-layer modules, not in core packages.
-
-### Rule 5: protected-path changes require stronger scrutiny
-
-Changes touching protected paths should trigger:
-
-* stronger review expectations
-* explicit validation evidence
-* architecture or security review when applicable
+* preserving separation between deployable surfaces and shared domain logic
+* keeping docs and process artifacts visible while the repo remains docs-first
+* leaving enough room for simulator-first implementation without forcing premature workspace or tool choices
 
 ## Alignment to the CTB Agent Workflow
 
@@ -348,11 +150,11 @@ Uses domain boundaries to size work and avoid ambiguous multi-domain stories.
 
 ### UI / UX Agent
 
-Primarily scopes to `apps/web` and any UI contracts used by the reporting flow.
+Primarily scopes to future user-facing app work that will live under `apps/`.
 
 ### Solution Architect Agent
 
-Owns cross-workspace boundaries, package placement, and protected-path decisions.
+Owns top-level boundary decisions, package-placement rules, and cross-workspace structure.
 
 ### Senior Software Engineer Agent
 
@@ -372,64 +174,52 @@ Owns `infra/`, environment wiring, worker scheduling, and operational deployment
 
 ### Security Agent
 
-Reviews protected paths, config handling, local notification delivery, and credential-sensitive edges.
+Reviews repository-boundary changes that affect configuration, infrastructure, or other credential-sensitive edges.
 
-## Recommended Initial Creation Order
+## Follow-On Story Handoff
 
-When implementation begins, create workspaces in this order:
+This baseline should feed:
 
-1. `apps/api`
-2. `packages/types`
-3. `packages/schemas`
-4. `packages/simulator-core`
-5. `packages/market-data`
-6. `apps/simulator-worker`
-7. `packages/reporting-core`
-8. `apps/reporting-worker`
-9. `packages/notification-core`
-10. `apps/notification-worker`
-11. `apps/web`
-12. `packages/config`
-13. `packages/test-utils`
-
-This order supports simulator-first delivery before UI polish.
+* `CTB-37` for shared tooling, linting, formatting, package conventions, and GitHub Actions expectations
+* `CTB-38` for the concrete app and shared-package workspace targets that will live inside this top-level structure
+* later implementation stories that create actual directories and code inside the approved layout
 
 ## Risks and Mitigations
 
-### Risk 1: app sprawl without stable package boundaries
+### Risk 1: top-level sprawl without a stable baseline
 
 Mitigation:
 
-* define ownership early
-* keep shared contracts in dedicated packages
-* require architecture review for new top-level workspaces
+* define the top-level layout before creating tooling or workspaces
+* require follow-on stories to reuse the approved structure
+* treat new top-level categories as an exception, not the default
 
-### Risk 2: core business logic leaks into report or notification apps
-
-Mitigation:
-
-* keep portfolio accounting in `simulator-core`
-* make reporting and notification downstream consumers only
-
-### Risk 3: protected paths are identified too late
+### Risk 2: this story drifts into tooling or workspace-definition design
 
 Mitigation:
 
-* document protected paths now
-* wire them into `CTB-17` CI/CD policy work
+* keep this document focused on top-level categories and responsibilities
+* leave concrete tooling to `CTB-37`
+* leave concrete workspace planning to `CTB-38`
 
-### Risk 4: future live-trading concerns distort current simulator design
+### Risk 3: the baseline becomes disconnected from the architecture direction
 
 Mitigation:
 
-* keep future live execution as a separate edge concern
-* avoid broker-specific dependencies inside core packages
+* keep the layout aligned to simulator-first separation of apps, shared packages, infrastructure, and docs
+* reference the monorepo baseline from follow-on planning docs
+
+### Risk 4: future work reintroduces stale issue lineage
+
+Mitigation:
+
+* update repository references to point to `CTB-36`
+* use this issue as the canonical monorepo-layout reference for the repository-foundation chain
 
 ## Recommended Next Implementation Work
 
 This document should feed:
 
-* `CTB-15` for reporting and GitHub Pages publication design in `docs/architecture/ctb-daily-reporting-and-github-pages.md`
-* `CTB-16` for local notification architecture in `docs/architecture/ctb-local-notification-agent.md`
-* `CTB-17` for protected-path enforcement in CI/CD
-* future repo bootstrap work to create the actual workspace skeletons
+* `CTB-37` shared tooling and CI baseline planning
+* `CTB-38` concrete workspace-target planning
+* later repository bootstrap work that creates the actual directories and packages inside the approved structure
