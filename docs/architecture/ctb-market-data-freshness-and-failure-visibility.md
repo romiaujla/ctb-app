@@ -289,3 +289,7 @@ This document should directly feed:
 * `CTB-47` replay-safe ingestion stages and idempotent capture design
 * simulator guardrail implementation stories that enforce strategy-block behavior
 * operator-facing health surfaces for market data trust
+
+Related follow-on baseline:
+
+* `docs/architecture/ctb-market-data-ingestion-replay-workflow.md`
