@@ -23,6 +23,7 @@ Core repository contracts:
 * [`docs/process/ctb-devops-platform-sre-agent-workflow.md`](docs/process/ctb-devops-platform-sre-agent-workflow.md)
 * [`docs/process/ctb-observability-dashboards-and-alerts.md`](docs/process/ctb-observability-dashboards-and-alerts.md)
 * [`docs/process/ctb-observability-model.md`](docs/process/ctb-observability-model.md)
+* [`docs/process/ctb-telemetry-baseline.md`](docs/process/ctb-telemetry-baseline.md)
 * [`docs/process/ctb-security-agent-workflow.md`](docs/process/ctb-security-agent-workflow.md)
 * [`docs/process/ctb-security-baseline.md`](docs/process/ctb-security-baseline.md)
 * [`docs/process/ctb-cicd-validation-baseline.md`](docs/process/ctb-cicd-validation-baseline.md)
