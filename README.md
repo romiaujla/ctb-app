@@ -42,6 +42,7 @@ Core repository contracts:
 * [`docs/architecture/ctb-strategy-rule-engine-and-versioning.md`](docs/architecture/ctb-strategy-rule-engine-and-versioning.md)
 * [`docs/architecture/ctb-strategy-output-and-explainability.md`](docs/architecture/ctb-strategy-output-and-explainability.md)
 * [`docs/architecture/ctb-daily-reporting-and-github-pages.md`](docs/architecture/ctb-daily-reporting-and-github-pages.md)
+* [`docs/architecture/ctb-local-data-and-config-foundation.md`](docs/architecture/ctb-local-data-and-config-foundation.md)
 * [`docs/architecture/ctb-local-notification-agent.md`](docs/architecture/ctb-local-notification-agent.md)
 * [`docs/architecture/ctb-local-development-runtime-stack.md`](docs/architecture/ctb-local-development-runtime-stack.md)
 * [`docs/architecture/ctb-monorepo-structure.md`](docs/architecture/ctb-monorepo-structure.md)
