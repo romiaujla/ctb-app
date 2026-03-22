@@ -40,6 +40,7 @@ Core repository contracts:
 * [`docs/architecture/ctb-v1-product-boundary.md`](docs/architecture/ctb-v1-product-boundary.md)
 * [`docs/architecture/ctb-v1-strategy-hypothesis.md`](docs/architecture/ctb-v1-strategy-hypothesis.md)
 * [`docs/architecture/ctb-operator-api-surface.md`](docs/architecture/ctb-operator-api-surface.md)
+* [`docs/architecture/ctb-control-plane-integration.md`](docs/architecture/ctb-control-plane-integration.md)
 * [`docs/architecture/ctb-simulator-domain-model-and-persistence-boundaries.md`](docs/architecture/ctb-simulator-domain-model-and-persistence-boundaries.md)
 * [`docs/architecture/ctb-simulator-accounting-and-event-history-model.md`](docs/architecture/ctb-simulator-accounting-and-event-history-model.md)
 * [`docs/architecture/ctb-simulator-determinism-replay-and-correctness-policy.md`](docs/architecture/ctb-simulator-determinism-replay-and-correctness-policy.md)
