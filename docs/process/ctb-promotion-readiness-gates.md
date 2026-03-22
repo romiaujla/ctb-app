@@ -8,6 +8,7 @@ It builds on:
 
 * `docs/process/ctb-agent-governance.md`
 * `docs/process/ctb-observability-dashboards-and-alerts.md`
+* `docs/process/ctb-profitability-review-and-strategy-switch-policy.md`
 * `docs/process/ctb-validation-matrix.md`
 * `docs/architecture/ctb-simulator-architecture.md`
 
@@ -105,5 +106,6 @@ Threshold satisfaction does not mean:
 Future CTB promotion and governance work should:
 
 * reuse this baseline as the first entry gate for promotion consideration
+* inherit the review evidence and version-reset expectations from `docs/process/ctb-profitability-review-and-strategy-switch-policy.md`
 * extend the remaining promotion stages without weakening the threshold gate
 * treat live execution as a separate approved program rather than an automatic backlog continuation
