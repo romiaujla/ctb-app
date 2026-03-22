@@ -279,7 +279,7 @@ Primary issues:
 * `CTB-36`
 * `CTB-15`
 * `CTB-16`
-* `CTB-17`
+* `CTB-37`
 * `CTB-18`
 * `CTB-19`
 
