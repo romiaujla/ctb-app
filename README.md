@@ -35,6 +35,7 @@ Core repository contracts:
 * [`docs/process/ctb-promotion-checklist-and-evidence-package.md`](docs/process/ctb-promotion-checklist-and-evidence-package.md)
 * [`docs/process/ctb-ai-usage-and-adr-governance.md`](docs/process/ctb-ai-usage-and-adr-governance.md)
 * [`docs/architecture/ctb-simulator-architecture.md`](docs/architecture/ctb-simulator-architecture.md)
+* [`docs/architecture/ctb-v1-product-boundary.md`](docs/architecture/ctb-v1-product-boundary.md)
 * [`docs/architecture/ctb-simulator-domain-model-and-persistence-boundaries.md`](docs/architecture/ctb-simulator-domain-model-and-persistence-boundaries.md)
 * [`docs/architecture/ctb-simulator-accounting-and-event-history-model.md`](docs/architecture/ctb-simulator-accounting-and-event-history-model.md)
 * [`docs/architecture/ctb-simulator-determinism-replay-and-correctness-policy.md`](docs/architecture/ctb-simulator-determinism-replay-and-correctness-policy.md)
