@@ -37,6 +37,7 @@ Core repository contracts:
 * [`docs/architecture/ctb-simulator-architecture.md`](docs/architecture/ctb-simulator-architecture.md)
 * [`docs/architecture/ctb-simulator-domain-model-and-persistence-boundaries.md`](docs/architecture/ctb-simulator-domain-model-and-persistence-boundaries.md)
 * [`docs/architecture/ctb-simulator-accounting-and-event-history-model.md`](docs/architecture/ctb-simulator-accounting-and-event-history-model.md)
+* [`docs/architecture/ctb-simulator-determinism-replay-and-correctness-policy.md`](docs/architecture/ctb-simulator-determinism-replay-and-correctness-policy.md)
 * [`docs/architecture/ctb-market-data-event-contract.md`](docs/architecture/ctb-market-data-event-contract.md)
 * [`docs/architecture/ctb-market-data-freshness-and-failure-visibility.md`](docs/architecture/ctb-market-data-freshness-and-failure-visibility.md)
 * [`docs/architecture/ctb-market-data-ingestion-replay-workflow.md`](docs/architecture/ctb-market-data-ingestion-replay-workflow.md)

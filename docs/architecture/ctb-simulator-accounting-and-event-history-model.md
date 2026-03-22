@@ -221,6 +221,6 @@ Mitigation:
 
 This baseline should directly feed:
 
-* `CTB-44` for determinism, replay-safe processing, and correctness-focused simulator validation expectations
+* `CTB-44` for determinism, replay-safe processing, and correctness-focused simulator validation expectations in `docs/architecture/ctb-simulator-determinism-replay-and-correctness-policy.md`
 * future `packages/simulator-core` implementation for accounting and derived-state behavior
 * future reporting and notification stories that consume canonical simulator accounting outputs
