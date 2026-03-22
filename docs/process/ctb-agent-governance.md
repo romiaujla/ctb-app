@@ -276,7 +276,7 @@ Exit criteria:
 Primary issues:
 
 * `CTB-13`
-* `CTB-14`
+* `CTB-36`
 * `CTB-15`
 * `CTB-16`
 * `CTB-17`
