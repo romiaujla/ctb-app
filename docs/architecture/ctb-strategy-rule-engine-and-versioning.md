@@ -182,3 +182,7 @@ This document should directly feed:
 * `CTB-50` explainability and strategy-output evidence design
 * replayable strategy-evaluation test cases
 * later API and reporting surfaces that consume strategy outcomes
+
+Related follow-on baseline:
+
+* `docs/architecture/ctb-strategy-output-and-explainability.md`
