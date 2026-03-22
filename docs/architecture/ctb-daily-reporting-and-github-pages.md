@@ -72,6 +72,7 @@ The reporting workflow should consume the following canonical inputs only:
 * cash balance and net liquidation value at close
 * open positions at close
 * closed trades executed during the day
+* strategy evidence summary for the closed day
 * report metadata including workflow version, source snapshot id, and generation timestamp
 
 The reporting workflow must not:
@@ -79,6 +80,47 @@ The reporting workflow must not:
 * recalculate cost basis independently
 * derive fills from raw market provider payloads
 * infer balances from UI state
+
+## Canonical Data Dependency Contract
+
+Daily report generation should remain strictly downstream of canonical system outputs.
+
+Required upstream records:
+
+* portfolio snapshot finalized for the closed reporting day
+* canonical ledger totals for realized and unrealized P&L
+* normalized open-position records at close
+* normalized closed-trade records for the day
+* strategy evidence summary for emitted, skipped, and blocked outcomes
+* workflow metadata including source snapshot id, workflow version, and generation timestamp
+
+Dependency rules:
+
+* reporting-worker should wait for the closed-day portfolio snapshot to reach a finalized state before shaping report artifacts
+* reporting-core should consume canonical portfolio and strategy outputs rather than rebuilding them from raw events
+* every report artifact should carry the same source snapshot id and workflow version so HTML, JSON, and publication metadata reconcile
+* if a required upstream dependency is missing, stale, or version-incompatible, the run should be classified as `failed` or `partial` before publication is attempted
+
+## Canonical Report Package
+
+The generation pipeline should build one canonical report package before rendering or publication.
+
+The canonical package should contain:
+
+* report header metadata
+* daily summary totals
+* open-position rows
+* closed-trade rows
+* strategy evidence summary for the day
+* execution notes and data-quality notes
+* operational metadata including validation and publication readiness state
+
+Design rules:
+
+* JSON is the machine-readable serialization of the canonical report package
+* HTML is a presentation rendering of the same canonical report package
+* publication metadata should reference the canonical package instead of introducing separate output-only fields
+* later notification and web-link workflows should consume package metadata rather than reconstructing status from multiple sources
 
 ## Required Report Contents
 
@@ -139,7 +181,17 @@ Include:
 * whether stale market data protections were triggered
 * whether any data fallbacks or partial inputs were used
 
-### 6. Operational Footer
+### 6. Strategy Evidence Summary
+
+Include:
+
+* strategy id and version for the closed day
+* emitted opportunity count
+* skipped opportunity count
+* blocked opportunity count
+* top reasons for skipped or blocked outcomes when available
+
+### 7. Operational Footer
 
 Include:
 
@@ -150,7 +202,7 @@ Include:
 
 ## Output Formats
 
-Each successful reporting run should produce two artifacts.
+Each reporting run that reaches artifact generation should produce two artifacts.
 
 ### Human-readable artifact
 
@@ -192,7 +244,7 @@ Recommended publication model:
 
 Publication rules:
 
-* only successful report builds are published to the dated path
+* only `complete` or explicitly labeled `partial` report builds are published to the dated path
 * publication should be atomic at the day-folder level so a partially written report is never presented as complete
 * the latest index should update only after the dated report artifacts are present
 
@@ -202,14 +254,75 @@ The daily workflow should run in this order:
 
 1. Detect the close of the reporting day in `America/Detroit`.
 2. Wait for the simulator-worker to finalize the end-of-day portfolio snapshot for that day.
-3. Load canonical snapshot, ledger, and closed-trade data for the closed day.
-4. Validate input completeness and freshness before rendering.
-5. Build the machine-readable report payload in `packages/reporting-core`.
-6. Render the HTML report artifact from the canonical report payload.
-7. Run report validation checks against totals, required fields, and artifact completeness.
-8. Publish the dated report folder and updated index to the GitHub Pages source.
-9. Emit a publication event containing the public URL, report date, artifact id, and validation result.
-10. Surface the published link to the owner through the web UI and notification workflow.
+3. Load canonical snapshot, ledger, closed-trade, and strategy-evidence data for the closed day.
+4. Validate dependency completeness, freshness, and version compatibility before artifact shaping.
+5. Build one canonical report package in `packages/reporting-core`.
+6. Serialize the machine-readable JSON artifact from the canonical report package.
+7. Render the HTML artifact from the same canonical report package.
+8. Run report validation checks against schema shape, required sections, totals reconciliation, and artifact completeness.
+9. Classify the run as `complete`, `partial`, or `failed` before any publication step executes.
+10. Publish the dated report folder and updated index to the GitHub Pages source only when the run classification permits publication.
+11. Emit a publication event containing the public URL, report date, artifact id, and validation result.
+12. Surface the published link and report outcome to the owner through the web UI and notification workflow.
+
+## Generation Pipeline Stages
+
+The reporting pipeline should be treated as four explicit stages with gated handoffs.
+
+### Stage 1: Dependency Collection
+
+Responsibilities:
+
+* identify the closed reporting day
+* gather the canonical upstream records for that day
+* verify that all records reference the same reporting boundary and workflow lineage
+
+Exit criteria:
+
+* all required upstream dependencies are present
+* source snapshot id and strategy version metadata reconcile
+* no dependency is marked stale beyond the permitted reporting window
+
+### Stage 2: Canonical Package Build
+
+Responsibilities:
+
+* shape daily summary, positions, trades, strategy evidence, and operational metadata into one canonical report package
+* attach execution notes and data-quality notes without altering canonical accounting logic
+
+Exit criteria:
+
+* the canonical report package is structurally complete
+* summary values reconcile to canonical portfolio totals
+* package status is ready for artifact rendering
+
+### Stage 3: Artifact Rendering
+
+Responsibilities:
+
+* serialize `report.json` from the canonical report package
+* render `index.html` from the same canonical report package
+* ensure both artifacts describe the same report date, artifact id, and run status
+
+Exit criteria:
+
+* both HTML and JSON artifacts are generated
+* artifact metadata matches the canonical report package exactly
+* partial warnings are visible when the package status is not `complete`
+
+### Stage 4: Publish Readiness and Publication
+
+Responsibilities:
+
+* run publish-readiness validation
+* classify the run as `complete`, `partial`, or `failed`
+* publish only the allowed outputs to the dated path and update the latest index safely
+
+Exit criteria:
+
+* publication rules for the classified run are satisfied
+* dated artifacts and index updates remain atomic
+* publication metadata is emitted for downstream consumers
 
 ## Surfacing Report Links
 
@@ -315,6 +428,54 @@ Recommended automated checks:
 * schema validation for the JSON report payload
 * snapshot or structural tests for HTML sections
 * reconciliation checks for summary totals against canonical snapshots
+
+## Publish-Readiness Contract
+
+Publication should be gated by an explicit readiness decision.
+
+### `complete`
+
+Required conditions:
+
+* all required dependencies are present and current
+* canonical report package passes schema validation
+* summary totals reconcile
+* HTML and JSON artifacts are both generated and metadata-matched
+
+Publication behavior:
+
+* publish the dated report path
+* update the latest index
+* emit success metadata for downstream notification and UI consumers
+
+### `partial`
+
+Allowed only when:
+
+* canonical accounting totals are trustworthy
+* a non-fatal deficiency is captured explicitly, such as fallback usage or reduced explanatory detail
+* HTML and JSON artifacts both display the same warning state
+
+Publication behavior:
+
+* publish only if the partial condition is labeled visibly in both artifacts and metadata
+* update the latest index with explicit partial status
+* emit the partial reason for downstream consumers
+
+### `failed`
+
+Required when:
+
+* a mandatory dependency is missing, stale, or incompatible
+* totals cannot be reconciled credibly
+* one required artifact is missing
+* publication safety guarantees cannot be met
+
+Publication behavior:
+
+* do not publish or update the dated report path as successful
+* preserve retryable intermediate artifacts when safe
+* emit failure metadata naming the blocking validation error
 
 ## Security and Access Considerations
 
