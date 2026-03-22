@@ -210,3 +210,7 @@ This document should directly feed:
 * `CTB-49` explicit strategy rule and trade-intent generation design
 * deterministic strategy-evaluation test scenarios
 * later API and operator visibility work that needs strategy explanations
+
+Related follow-on baseline:
+
+* `docs/architecture/ctb-strategy-rule-engine-and-versioning.md`

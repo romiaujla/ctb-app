@@ -30,6 +30,7 @@ Core repository contracts:
 * [`docs/architecture/ctb-market-data-freshness-and-failure-visibility.md`](docs/architecture/ctb-market-data-freshness-and-failure-visibility.md)
 * [`docs/architecture/ctb-market-data-ingestion-replay-workflow.md`](docs/architecture/ctb-market-data-ingestion-replay-workflow.md)
 * [`docs/architecture/ctb-strategy-input-contract.md`](docs/architecture/ctb-strategy-input-contract.md)
+* [`docs/architecture/ctb-strategy-rule-engine-and-versioning.md`](docs/architecture/ctb-strategy-rule-engine-and-versioning.md)
 * [`docs/architecture/ctb-daily-reporting-and-github-pages.md`](docs/architecture/ctb-daily-reporting-and-github-pages.md)
 * [`docs/architecture/ctb-local-notification-agent.md`](docs/architecture/ctb-local-notification-agent.md)
 * [`docs/architecture/ctb-monorepo-structure.md`](docs/architecture/ctb-monorepo-structure.md)
