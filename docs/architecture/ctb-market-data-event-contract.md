@@ -302,3 +302,7 @@ This document should directly feed:
 * `CTB-46` freshness, stale-data handling, and failure visibility rules
 * `CTB-47` replay-ready ingestion workflow and idempotent capture behavior
 * `CTB-48` strategy input contracts that consume canonical market events only
+
+Related follow-on baseline:
+
+* `docs/architecture/ctb-market-data-freshness-and-failure-visibility.md`
