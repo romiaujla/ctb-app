@@ -235,6 +235,13 @@ The JSON artifact should mirror the published report content closely enough that
 
 GitHub Pages should be used as the publication surface for report history.
 
+Static-surface rules:
+
+* GitHub Pages is a distribution surface for already-generated artifacts, not a runtime that recalculates report content
+* all report calculation, validation, and status classification must finish before publication begins
+* Pages content should be generated ahead of time and served as static files only
+* downstream consumers should link to published artifacts rather than duplicating report rendering elsewhere
+
 Recommended publication model:
 
 * a dedicated Pages source branch such as `gh-pages`
@@ -242,11 +249,53 @@ Recommended publication model:
 * a matching JSON artifact at `reports/2026-03-21/report.json`
 * an index page listing recent report dates and summary values
 
+## Publication Workflow
+
+The publication workflow should remain separate from report generation while consuming its validated outputs.
+
+Publication sequence:
+
+1. Receive the validated canonical report package and rendered artifacts from the reporting pipeline.
+2. Confirm the run classification permits publication.
+3. Stage the dated report directory containing `index.html` and `report.json`.
+4. Regenerate the history index from published-report metadata rather than manual edits.
+5. Update any stable alias paths only after the dated directory and history index are ready.
+6. Publish the static output atomically to the Pages source branch.
+7. Emit operator handoff metadata containing the stable URLs and publication outcome.
+
+Publication boundary rules:
+
+* Pages publication must never upgrade a `failed` report into a visible success state
+* the publication step must consume the validated artifact set from CTB-55 rather than rebuilding it
+* index generation should rely on canonical publication metadata so link history stays deterministic
+* notification and UI consumers should depend on the emitted handoff metadata, not scrape Pages content
+
 Publication rules:
 
 * only `complete` or explicitly labeled `partial` report builds are published to the dated path
 * publication should be atomic at the day-folder level so a partially written report is never presented as complete
 * the latest index should update only after the dated report artifacts are present
+
+## Report History Index Contract
+
+The Pages history index should be the static entry point for report discovery.
+
+The index should include, at minimum:
+
+* report date
+* report status
+* summary value snapshot suitable for quick scanning
+* link to the dated HTML report
+* link to the dated JSON artifact when operator-facing access to machine-readable output is appropriate
+* generation timestamp or publication timestamp
+
+Index rules:
+
+* the index should be rebuilt from published metadata on each successful publication cycle
+* the most recent report should be visually distinguishable from older entries
+* partial reports should be labeled explicitly in the index
+* failed runs should appear through status metadata only when the product chooses to expose them, but they must not masquerade as published reports
+* the index must stay static and navigable on mobile and desktop surfaces
 
 ## End-to-End Workflow
 
@@ -331,6 +380,25 @@ The owner should be able to discover reports in two ways:
 * a report history view in `apps/web`
 * an owner-facing notification containing the latest report link and outcome summary
 
+## Link Conventions
+
+Published report URLs should be stable enough that downstream consumers can reference them without custom rewriting.
+
+Recommended link set:
+
+* dated HTML report: `/reports/YYYY-MM-DD/`
+* dated JSON artifact: `/reports/YYYY-MM-DD/report.json`
+* history index: `/reports/`
+* latest report alias, if adopted later: `/reports/latest/`
+
+Link rules:
+
+* the dated path is the canonical immutable link for a specific reporting day
+* notifications should prefer dated links when referencing a completed day
+* operator UI may use the history index for browsing and the dated link for direct navigation
+* any latest alias should resolve to the most recent published `complete` or explicitly labeled `partial` report without replacing dated paths
+* reruns should preserve the dated path contract while updating underlying artifacts atomically
+
 The minimum link contract should include:
 
 * report date
@@ -343,6 +411,29 @@ The web experience should prioritize:
 * a latest report link
 * recent history access
 * explicit status when the most recent report was not published successfully
+
+## Operator Handoff Contract
+
+After publication, CTB should emit one operator-facing handoff record.
+
+The handoff record should include:
+
+* report date
+* run classification
+* dated HTML report URL
+* dated JSON artifact URL when available
+* history index URL
+* publication timestamp
+* artifact id
+* source snapshot id
+* short outcome summary suitable for notifications and web surfaces
+
+Handoff rules:
+
+* handoff metadata should be emitted only after publication outcome is final
+* notification and web consumers should display the published status from the handoff record rather than infer it from URL existence
+* partial publications must carry the warning reason into the handoff record
+* failed publications must expose the blocking reason without advertising a successful report URL
 
 ## Timing and Scheduling
 
