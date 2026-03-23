@@ -1,5 +1,6 @@
 export function startApiScaffold(): string {
-  const message = "CTB API scaffold is ready for downstream runtime implementation.";
+  const message =
+    'CTB API scaffold is ready for downstream runtime implementation.';
   console.log(message);
 
   return message;

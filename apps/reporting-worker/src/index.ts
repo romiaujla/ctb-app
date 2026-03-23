@@ -1,6 +1,6 @@
 export function startReportingWorkerScaffold(): string {
   const message =
-    "CTB reporting-worker scaffold is ready for report-generation implementation.";
+    'CTB reporting-worker scaffold is ready for report-generation implementation.';
   console.log(message);
 
   return message;
