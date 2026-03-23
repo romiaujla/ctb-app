@@ -1,4 +1,4 @@
-import { createLocalDependencyConfig } from '@ctb/config';
+import { createLocalDependencyConfig, loadRuntimeConfig } from '@ctb/config';
 import {
   serviceHeartbeatSchema,
   serviceRuntimeDescriptorSchema,
@@ -7,14 +7,19 @@ import { summarizeDependencies } from '@ctb/test-utils';
 import type { ServiceHeartbeat, ServiceRuntimeDescriptor } from '@ctb/types';
 
 export function buildSimulatorWorkerRuntimeDescriptor(): ServiceRuntimeDescriptor {
+  const runtimeConfig = loadRuntimeConfig('simulator-worker', {
+    ...process.env,
+    PORT: String(process.env.PORT ?? 3030),
+  });
+
   return serviceRuntimeDescriptorSchema.parse({
     name: 'simulator-worker',
     role: 'CTB simulation and market-data placeholder worker',
     startupMessage:
       'CTB simulator worker is ready with local Postgres and Redis placeholders.',
     dependencies: createLocalDependencyConfig({
-      postgresUrl: process.env.POSTGRES_URL,
-      redisUrl: process.env.REDIS_URL,
+      postgresUrl: runtimeConfig.postgresUrl,
+      redisUrl: runtimeConfig.redisUrl,
     }),
   });
 }

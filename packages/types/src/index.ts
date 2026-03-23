@@ -19,3 +19,10 @@ export interface ServiceHeartbeat {
   startedAt: string;
   dependencies: DependencyName[];
 }
+
+export interface RuntimeConfig {
+  serviceName: string;
+  port: number;
+  postgresUrl: string;
+  redisUrl: string;
+}
