@@ -4,8 +4,10 @@ import { createLocalDependencyConfig, loadRuntimeConfig } from '@ctb/config';
 import { serviceRuntimeDescriptorSchema } from '@ctb/schemas';
 import type { ServiceRuntimeDescriptor } from '@ctb/types';
 
-export function buildApiRuntimeDescriptor(): ServiceRuntimeDescriptor {
-  const runtimeConfig = loadRuntimeConfig('api');
+export function buildApiRuntimeDescriptor(
+  rawEnvironment: NodeJS.ProcessEnv = process.env,
+): ServiceRuntimeDescriptor {
+  const runtimeConfig = loadRuntimeConfig('api', rawEnvironment);
 
   return serviceRuntimeDescriptorSchema.parse({
     name: 'api',
@@ -18,12 +20,16 @@ export function buildApiRuntimeDescriptor(): ServiceRuntimeDescriptor {
   });
 }
 
-export async function startApiWorkspace(port?: number) {
-  const runtimeConfig = loadRuntimeConfig('api', {
-    ...process.env,
-    PORT: String(port ?? process.env.PORT ?? 3010),
-  });
-  const descriptor = buildApiRuntimeDescriptor();
+export async function startApiWorkspace(
+  port?: number,
+  rawEnvironment: NodeJS.ProcessEnv = process.env,
+) {
+  const serviceEnvironment = {
+    ...rawEnvironment,
+    PORT: String(port ?? rawEnvironment.PORT ?? 3010),
+  };
+  const runtimeConfig = loadRuntimeConfig('api', serviceEnvironment);
+  const descriptor = buildApiRuntimeDescriptor(serviceEnvironment);
 
   const server = http.createServer((request, response) => {
     if (request.url === '/health') {
