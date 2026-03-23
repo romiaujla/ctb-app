@@ -26,3 +26,11 @@ export interface RuntimeConfig {
   postgresUrl: string;
   redisUrl: string;
 }
+
+export interface SimulatorQueueReservation {
+  accepted: boolean;
+  eventId: string;
+  queueKey: string;
+  dedupeKey: string;
+  pendingItems: number;
+}

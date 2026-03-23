@@ -32,6 +32,7 @@ Shared validation commands:
 - `pnpm lint`
 - `pnpm typecheck`
 - `pnpm test`
+- `pnpm test:integration`
 - `pnpm format:check`
 - `pnpm validate`
 
@@ -48,6 +49,13 @@ Database and config baseline:
 - `pnpm db:generate` generates the Prisma client from `prisma/schema.prisma`.
 - `pnpm db:migrate:deploy` applies the tracked local migration baseline.
 - `pnpm db:prepare` runs generation plus migration deployment for a fresh clone.
+
+Bootstrap and seed workflow:
+
+- `pnpm bootstrap:local` installs dependencies, generates Prisma client code, and runs baseline tests for a fresh clone.
+- `pnpm bootstrap:local -- --with-integration` also runs the containerized integration harness when Docker is available.
+- `pnpm seed:runtime-heartbeat` writes a baseline `RuntimeHeartbeat` record using the active `POSTGRES_URL`.
+- `pnpm test:integration` provisions ephemeral Postgres and Redis containers to validate the API runtime and simulator-worker Redis dedupe flow.
 
 Core repository contracts:
 

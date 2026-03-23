@@ -6,10 +6,12 @@ import {
 import { summarizeDependencies } from '@ctb/test-utils';
 import type { ServiceHeartbeat, ServiceRuntimeDescriptor } from '@ctb/types';
 
-export function buildSimulatorWorkerRuntimeDescriptor(): ServiceRuntimeDescriptor {
+export function buildSimulatorWorkerRuntimeDescriptor(
+  rawEnvironment: NodeJS.ProcessEnv = process.env,
+): ServiceRuntimeDescriptor {
   const runtimeConfig = loadRuntimeConfig('simulator-worker', {
-    ...process.env,
-    PORT: String(process.env.PORT ?? 3030),
+    ...rawEnvironment,
+    PORT: String(rawEnvironment.PORT ?? 3030),
   });
 
   return serviceRuntimeDescriptorSchema.parse({
@@ -24,8 +26,10 @@ export function buildSimulatorWorkerRuntimeDescriptor(): ServiceRuntimeDescripto
   });
 }
 
-export function startSimulatorWorkerScaffold(): ServiceHeartbeat {
-  const descriptor = buildSimulatorWorkerRuntimeDescriptor();
+export function startSimulatorWorkerScaffold(
+  rawEnvironment: NodeJS.ProcessEnv = process.env,
+): ServiceHeartbeat {
+  const descriptor = buildSimulatorWorkerRuntimeDescriptor(rawEnvironment);
   const heartbeat = serviceHeartbeatSchema.parse({
     service: descriptor.name,
     startedAt: new Date().toISOString(),

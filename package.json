@@ -7,6 +7,7 @@
     "node": ">=22.16.0"
   },
   "scripts": {
+    "bootstrap:local": "node scripts/bootstrap-local.mjs",
     "dev:api": "pnpm --filter @ctb/api start",
     "dev:web": "pnpm --filter @ctb/web start",
     "dev:simulator-worker": "pnpm --filter @ctb/simulator-worker start",
@@ -23,8 +24,10 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "package:conventions": "node scripts/check-package-conventions.mjs",
+    "seed:runtime-heartbeat": "node scripts/seed-runtime-heartbeat.mjs",
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "node --import tsx --test tests/**/*.test.ts",
+    "test:integration": "node --import tsx --test tests/**/*.integration.ts",
     "validate": "pnpm package:conventions && pnpm lint && pnpm typecheck && pnpm test && pnpm format:check"
   },
   "devDependencies": {

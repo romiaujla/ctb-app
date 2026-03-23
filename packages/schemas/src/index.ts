@@ -24,3 +24,11 @@ export const runtimeEnvironmentSchema = z.object({
   POSTGRES_URL: z.string().url(),
   REDIS_URL: z.string().url(),
 });
+
+export const simulatorQueueReservationSchema = z.object({
+  accepted: z.boolean(),
+  eventId: z.string().min(1),
+  queueKey: z.string().min(1),
+  dedupeKey: z.string().min(1),
+  pendingItems: z.number().int().min(0),
+});
