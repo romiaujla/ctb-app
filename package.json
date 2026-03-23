@@ -27,7 +27,7 @@
     "seed:runtime-heartbeat": "node scripts/seed-runtime-heartbeat.mjs",
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "node --import tsx --test tests/**/*.test.ts",
-    "test:integration": "node --import tsx --test tests/**/*.integration.ts",
+    "test:integration": "pnpm db:generate && node --import tsx --test tests/**/*.integration.ts",
     "validate": "pnpm package:conventions && pnpm lint && pnpm typecheck && pnpm test && pnpm format:check"
   },
   "devDependencies": {
