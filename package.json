@@ -15,6 +15,10 @@
     "dev:stack:up": "docker compose -f infra/docker/compose.yml up --build",
     "dev:stack:down": "docker compose -f infra/docker/compose.yml down --volumes",
     "dev:stack:logs": "docker compose -f infra/docker/compose.yml logs -f",
+    "db:generate": "prisma generate",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:validate": "prisma validate",
+    "db:prepare": "pnpm db:generate && pnpm db:migrate:deploy",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -26,11 +30,15 @@
   "devDependencies": {
     "@eslint/js": "^9.24.0",
     "@types/node": "^24.0.15",
+    "prisma": "^6.7.0",
     "eslint": "^9.24.0",
     "globals": "^16.0.0",
     "prettier": "^3.5.3",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.29.1"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.7.0"
   }
 }

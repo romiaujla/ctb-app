@@ -18,3 +18,9 @@ export const serviceHeartbeatSchema = z.object({
   startedAt: z.string().datetime(),
   dependencies: z.array(z.enum(['postgres', 'redis'])).min(1),
 });
+
+export const runtimeEnvironmentSchema = z.object({
+  PORT: z.coerce.number().int().min(0).default(3010),
+  POSTGRES_URL: z.string().url(),
+  REDIS_URL: z.string().url(),
+});

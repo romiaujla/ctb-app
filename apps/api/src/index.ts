@@ -1,27 +1,28 @@
 import http from 'node:http';
 
-import {
-  createLocalDependencyConfig,
-  defaultServicePortMap,
-} from '@ctb/config';
+import { createLocalDependencyConfig, loadRuntimeConfig } from '@ctb/config';
 import { serviceRuntimeDescriptorSchema } from '@ctb/schemas';
 import type { ServiceRuntimeDescriptor } from '@ctb/types';
 
 export function buildApiRuntimeDescriptor(): ServiceRuntimeDescriptor {
-  const port = Number(process.env.PORT ?? defaultServicePortMap.api);
+  const runtimeConfig = loadRuntimeConfig('api');
 
   return serviceRuntimeDescriptorSchema.parse({
     name: 'api',
     role: 'CTB control-plane placeholder runtime',
-    startupMessage: `CTB API workspace is listening on port ${port} with local dependency placeholders.`,
+    startupMessage: `CTB API workspace is listening on port ${runtimeConfig.port} with local dependency placeholders.`,
     dependencies: createLocalDependencyConfig({
-      postgresUrl: process.env.POSTGRES_URL,
-      redisUrl: process.env.REDIS_URL,
+      postgresUrl: runtimeConfig.postgresUrl,
+      redisUrl: runtimeConfig.redisUrl,
     }),
   });
 }
 
-export async function startApiWorkspace(port = defaultServicePortMap.api) {
+export async function startApiWorkspace(port?: number) {
+  const runtimeConfig = loadRuntimeConfig('api', {
+    ...process.env,
+    PORT: String(port ?? process.env.PORT ?? 3010),
+  });
   const descriptor = buildApiRuntimeDescriptor();
 
   const server = http.createServer((request, response) => {
@@ -36,7 +37,7 @@ export async function startApiWorkspace(port = defaultServicePortMap.api) {
   });
 
   await new Promise<void>((resolve) => {
-    server.listen(port, resolve);
+    server.listen(runtimeConfig.port, resolve);
   });
 
   console.log(

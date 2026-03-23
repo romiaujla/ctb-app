@@ -42,6 +42,13 @@ Local Docker runtime:
 - `pnpm dev:stack:down` stops the stack and removes the local Postgres volume.
 - the API health route is available at `http://localhost:3010/health` once the stack is healthy.
 
+Database and config baseline:
+
+- copy `.env.example` to `.env` or export the same variables before local startup.
+- `pnpm db:generate` generates the Prisma client from `prisma/schema.prisma`.
+- `pnpm db:migrate:deploy` applies the tracked local migration baseline.
+- `pnpm db:prepare` runs generation plus migration deployment for a fresh clone.
+
 Core repository contracts:
 
 - [`AGENTS.md`](AGENTS.md)

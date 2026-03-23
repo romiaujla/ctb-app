@@ -6,7 +6,10 @@ import { startNotificationWorkerScaffold } from '../apps/notification-worker/src
 import { startReportingWorkerScaffold } from '../apps/reporting-worker/src/index.ts';
 import { startSimulatorWorkerScaffold } from '../apps/simulator-worker/src/index.ts';
 import { bootstrapWebScaffold } from '../apps/web/src/main.ts';
-import { createLocalDependencyConfig } from '../packages/config/src/index.ts';
+import {
+  createLocalDependencyConfig,
+  loadRuntimeConfig,
+} from '../packages/config/src/index.ts';
 
 test('api workspace starts and serves a health response', async () => {
   const { descriptor, server } = await startApiWorkspace(0);
@@ -61,4 +64,15 @@ test('shared config exposes local dependency placeholders', () => {
     createLocalDependencyConfig().map((dependency) => dependency.name),
     ['postgres', 'redis'],
   );
+});
+
+test('shared runtime config validates env input', () => {
+  const runtimeConfig = loadRuntimeConfig('api', {
+    PORT: '4010',
+    POSTGRES_URL: 'postgresql://ctb:ctb@localhost:5432/ctb_app',
+    REDIS_URL: 'redis://localhost:6379',
+  });
+
+  assert.equal(runtimeConfig.port, 4010);
+  assert.equal(runtimeConfig.serviceName, 'api');
 });

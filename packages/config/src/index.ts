@@ -1,4 +1,5 @@
-import type { DependencyDescriptor } from '@ctb/types';
+import { runtimeEnvironmentSchema } from '@ctb/schemas';
+import type { DependencyDescriptor, RuntimeConfig } from '@ctb/types';
 
 export const defaultServicePortMap = {
   api: 3010,
@@ -25,4 +26,24 @@ export function createLocalDependencyConfig(options?: {
       state: 'configured',
     },
   ];
+}
+
+export function loadRuntimeConfig(
+  serviceName: string,
+  rawEnvironment: NodeJS.ProcessEnv = process.env,
+): RuntimeConfig {
+  const parsed = runtimeEnvironmentSchema.parse({
+    PORT: rawEnvironment.PORT ?? defaultServicePortMap.api,
+    POSTGRES_URL:
+      rawEnvironment.POSTGRES_URL ??
+      'postgresql://ctb:ctb@localhost:5432/ctb_app',
+    REDIS_URL: rawEnvironment.REDIS_URL ?? 'redis://localhost:6379',
+  });
+
+  return {
+    serviceName,
+    port: parsed.PORT,
+    postgresUrl: parsed.POSTGRES_URL,
+    redisUrl: parsed.REDIS_URL,
+  };
 }
