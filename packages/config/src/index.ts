@@ -8,16 +8,20 @@ export const defaultServicePortMap = {
   'notification-worker': 3050,
 } as const;
 
-export function createLocalDependencyConfig(): DependencyDescriptor[] {
+export function createLocalDependencyConfig(options?: {
+  postgresUrl?: string;
+  redisUrl?: string;
+}): DependencyDescriptor[] {
   return [
     {
       name: 'postgres',
-      url: 'http://localhost:5432',
+      url:
+        options?.postgresUrl ?? 'postgresql://ctb:ctb@localhost:5432/ctb_app',
       state: 'configured',
     },
     {
       name: 'redis',
-      url: 'http://localhost:6379',
+      url: options?.redisUrl ?? 'redis://localhost:6379',
       state: 'configured',
     },
   ];

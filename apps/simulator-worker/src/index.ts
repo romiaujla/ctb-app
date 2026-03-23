@@ -12,7 +12,10 @@ export function buildSimulatorWorkerRuntimeDescriptor(): ServiceRuntimeDescripto
     role: 'CTB simulation and market-data placeholder worker',
     startupMessage:
       'CTB simulator worker is ready with local Postgres and Redis placeholders.',
-    dependencies: createLocalDependencyConfig(),
+    dependencies: createLocalDependencyConfig({
+      postgresUrl: process.env.POSTGRES_URL,
+      redisUrl: process.env.REDIS_URL,
+    }),
   });
 }
 

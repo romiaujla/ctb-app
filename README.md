@@ -35,6 +35,13 @@ Shared validation commands:
 - `pnpm format:check`
 - `pnpm validate`
 
+Local Docker runtime:
+
+- `pnpm dev:stack:up` builds and starts the API, simulator worker, Postgres, and Redis stack.
+- `pnpm dev:stack:logs` tails the stack logs for troubleshooting local boot issues.
+- `pnpm dev:stack:down` stops the stack and removes the local Postgres volume.
+- the API health route is available at `http://localhost:3010/health` once the stack is healthy.
+
 Core repository contracts:
 
 - [`AGENTS.md`](AGENTS.md)
