@@ -7,6 +7,24 @@ Current repository priorities:
 * establish the CTB agent operating framework
 * define the Jira workflow, handoff artifacts, and release evidence model
 * prepare the repository for simulator-first product implementation
+* stand up the executable Milestone 1 monorepo scaffold
+
+Executable repository scaffold:
+
+* `package.json`
+* `pnpm-workspace.yaml`
+* `tsconfig.base.json`
+* `apps/api`
+* `apps/web`
+* `apps/simulator-worker`
+* `apps/reporting-worker`
+* `apps/notification-worker`
+* `packages/types`
+* `packages/schemas`
+* `packages/config`
+* `packages/test-utils`
+* `infra`
+* `scripts`
 
 Core repository contracts:
 
