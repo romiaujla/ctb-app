@@ -32,15 +32,76 @@ importers:
         specifier: ^8.29.1
         version: 8.57.1(eslint@9.39.4)(typescript@5.9.3)
 
-  apps/api: {}
+  apps/api:
+    dependencies:
+      '@ctb/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@ctb/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
+      '@ctb/types':
+        specifier: workspace:*
+        version: link:../../packages/types
 
-  apps/notification-worker: {}
+  apps/notification-worker:
+    dependencies:
+      '@ctb/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@ctb/types':
+        specifier: workspace:*
+        version: link:../../packages/types
 
-  apps/reporting-worker: {}
+  apps/reporting-worker:
+    dependencies:
+      '@ctb/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@ctb/types':
+        specifier: workspace:*
+        version: link:../../packages/types
 
-  apps/simulator-worker: {}
+  apps/simulator-worker:
+    dependencies:
+      '@ctb/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@ctb/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
+      '@ctb/test-utils':
+        specifier: workspace:*
+        version: link:../../packages/test-utils
+      '@ctb/types':
+        specifier: workspace:*
+        version: link:../../packages/types
 
-  apps/web: {}
+  apps/web:
+    dependencies:
+      '@ctb/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+
+  packages/config:
+    dependencies:
+      '@ctb/types':
+        specifier: workspace:*
+        version: link:../types
+
+  packages/schemas:
+    dependencies:
+      zod:
+        specifier: ^3.24.2
+        version: 3.25.76
+
+  packages/test-utils:
+    dependencies:
+      '@ctb/types':
+        specifier: workspace:*
+        version: link:../types
+
+  packages/types: {}
 
 packages:
   '@esbuild/aix-ppc64@0.27.4':
@@ -1113,6 +1174,12 @@ packages:
       }
     engines: { node: '>=10' }
 
+  zod@3.25.76:
+    resolution:
+      {
+        integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==,
+      }
+
 snapshots:
   '@esbuild/aix-ppc64@0.27.4':
     optional: true
@@ -1702,3 +1769,5 @@ snapshots:
   word-wrap@1.2.5: {}
 
   yocto-queue@0.1.0: {}
+
+  zod@3.25.76: {}

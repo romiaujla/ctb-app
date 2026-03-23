@@ -1,13 +1,13 @@
 {
-  "name": "@ctb/web",
+  "name": "@ctb/types",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "scripts": {
-    "start": "tsx src/main.ts",
-    "typecheck": "tsc --project tsconfig.json --noEmit"
+  "exports": {
+    ".": "./src/index.ts"
   },
-  "dependencies": {
-    "@ctb/config": "workspace:*"
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --project tsconfig.json --noEmit"
   }
 }

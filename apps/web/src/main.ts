@@ -1,11 +1,13 @@
-export function bootstrapWebScaffold(): string {
-  const message =
-    'CTB web scaffold is ready for the operator UI implementation.';
-  console.log(message);
+import { defaultServicePortMap } from '@ctb/config';
 
-  return message;
+export function bootstrapWebScaffold(): string {
+  return [
+    'CTB web workspace is ready for operator UI implementation.',
+    `API placeholder: http://localhost:${defaultServicePortMap.api}`,
+    `Web placeholder: http://localhost:${defaultServicePortMap.web}`,
+  ].join('\n');
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  bootstrapWebScaffold();
+  console.log(bootstrapWebScaffold());
 }

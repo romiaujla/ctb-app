@@ -1,31 +1,64 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { startApiScaffold } from '../apps/api/src/index.ts';
+import { startApiWorkspace } from '../apps/api/src/index.ts';
 import { startNotificationWorkerScaffold } from '../apps/notification-worker/src/index.ts';
 import { startReportingWorkerScaffold } from '../apps/reporting-worker/src/index.ts';
 import { startSimulatorWorkerScaffold } from '../apps/simulator-worker/src/index.ts';
 import { bootstrapWebScaffold } from '../apps/web/src/main.ts';
+import { createLocalDependencyConfig } from '../packages/config/src/index.ts';
 
-test('api scaffold remains importable', () => {
-  assert.match(startApiScaffold(), /API scaffold/);
+test('api workspace starts and serves a health response', async () => {
+  const { descriptor, server } = await startApiWorkspace(0);
+  const address = server.address();
+
+  assert.ok(address && typeof address === 'object');
+
+  const response = await fetch(`http://127.0.0.1:${address.port}/health`);
+  const payload = await response.json();
+
+  assert.equal(payload.ok, true);
+  assert.equal(payload.service, descriptor.name);
+
+  await new Promise<void>((resolve, reject) => {
+    server.close((error) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      resolve();
+    });
+  });
 });
 
 test('web scaffold remains importable', () => {
-  assert.match(bootstrapWebScaffold(), /web scaffold/);
+  assert.match(bootstrapWebScaffold(), /web workspace/);
 });
 
 test('simulator worker scaffold remains importable', () => {
-  assert.match(startSimulatorWorkerScaffold(), /simulator-worker scaffold/);
+  const heartbeat = startSimulatorWorkerScaffold();
+  assert.equal(heartbeat.service, 'simulator-worker');
+  assert.deepEqual(heartbeat.dependencies, ['postgres', 'redis']);
 });
 
 test('reporting worker scaffold remains importable', () => {
-  assert.match(startReportingWorkerScaffold(), /reporting-worker scaffold/);
+  assert.match(
+    startReportingWorkerScaffold().startupMessage,
+    /reporting worker/,
+  );
 });
 
 test('notification worker scaffold remains importable', () => {
   assert.match(
-    startNotificationWorkerScaffold(),
-    /notification-worker scaffold/,
+    startNotificationWorkerScaffold().startupMessage,
+    /notification worker/,
+  );
+});
+
+test('shared config exposes local dependency placeholders', () => {
+  assert.deepEqual(
+    createLocalDependencyConfig().map((dependency) => dependency.name),
+    ['postgres', 'redis'],
   );
 });

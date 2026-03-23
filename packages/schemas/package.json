@@ -1,14 +1,16 @@
 {
-  "name": "@ctb/reporting-worker",
+  "name": "@ctb/schemas",
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "types": "./src/index.ts",
   "scripts": {
-    "start": "tsx src/index.ts",
     "typecheck": "tsc --project tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@ctb/config": "workspace:*",
-    "@ctb/types": "workspace:*"
+    "zod": "^3.24.2"
   }
 }

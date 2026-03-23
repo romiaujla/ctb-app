@@ -1,0 +1,21 @@
+export type DependencyName = 'postgres' | 'redis';
+export type DependencyState = 'configured' | 'placeholder';
+
+export interface DependencyDescriptor {
+  name: DependencyName;
+  url: string;
+  state: DependencyState;
+}
+
+export interface ServiceRuntimeDescriptor {
+  name: string;
+  role: string;
+  startupMessage: string;
+  dependencies: DependencyDescriptor[];
+}
+
+export interface ServiceHeartbeat {
+  service: string;
+  startedAt: string;
+  dependencies: DependencyName[];
+}

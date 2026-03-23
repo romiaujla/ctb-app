@@ -1,16 +1,16 @@
 {
-  "name": "@ctb/simulator-worker",
+  "name": "@ctb/config",
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "types": "./src/index.ts",
   "scripts": {
-    "start": "tsx src/index.ts",
     "typecheck": "tsc --project tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@ctb/config": "workspace:*",
-    "@ctb/schemas": "workspace:*",
-    "@ctb/test-utils": "workspace:*",
     "@ctb/types": "workspace:*"
   }
 }
