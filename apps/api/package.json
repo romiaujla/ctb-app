@@ -6,5 +6,10 @@
   "scripts": {
     "start": "tsx src/index.ts",
     "typecheck": "tsc --project tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@ctb/config": "workspace:*",
+    "@ctb/schemas": "workspace:*",
+    "@ctb/types": "workspace:*"
   }
 }
