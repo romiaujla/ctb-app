@@ -12,11 +12,22 @@
     "dev:simulator-worker": "pnpm --filter @ctb/simulator-worker start",
     "dev:reporting-worker": "pnpm --filter @ctb/reporting-worker start",
     "dev:notification-worker": "pnpm --filter @ctb/notification-worker start",
-    "typecheck": "pnpm -r --if-present typecheck"
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "package:conventions": "node scripts/check-package-conventions.mjs",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "test": "node --import tsx --test tests/**/*.test.ts",
+    "validate": "pnpm package:conventions && pnpm lint && pnpm typecheck && pnpm test && pnpm format:check"
   },
   "devDependencies": {
+    "@eslint/js": "^9.24.0",
     "@types/node": "^24.0.15",
+    "eslint": "^9.24.0",
+    "globals": "^16.0.0",
+    "prettier": "^3.5.3",
     "tsx": "^4.20.3",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.29.1"
   }
 }

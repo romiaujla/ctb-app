@@ -1,0 +1,9 @@
+coverage
+dist
+node_modules
+AGENTS.md
+docs/architecture
+docs/process
+docs/templates
+docs/specs/**
+!docs/specs/ctb-70/**

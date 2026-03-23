@@ -1,5 +1,6 @@
 export function bootstrapWebScaffold(): string {
-  const message = "CTB web scaffold is ready for the operator UI implementation.";
+  const message =
+    'CTB web scaffold is ready for the operator UI implementation.';
   console.log(message);
 
   return message;
