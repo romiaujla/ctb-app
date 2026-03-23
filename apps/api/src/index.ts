@@ -8,12 +8,16 @@ import { serviceRuntimeDescriptorSchema } from '@ctb/schemas';
 import type { ServiceRuntimeDescriptor } from '@ctb/types';
 
 export function buildApiRuntimeDescriptor(): ServiceRuntimeDescriptor {
+  const port = Number(process.env.PORT ?? defaultServicePortMap.api);
+
   return serviceRuntimeDescriptorSchema.parse({
     name: 'api',
     role: 'CTB control-plane placeholder runtime',
-    startupMessage:
-      'CTB API workspace is listening with local dependency placeholders.',
-    dependencies: createLocalDependencyConfig(),
+    startupMessage: `CTB API workspace is listening on port ${port} with local dependency placeholders.`,
+    dependencies: createLocalDependencyConfig({
+      postgresUrl: process.env.POSTGRES_URL,
+      redisUrl: process.env.REDIS_URL,
+    }),
   });
 }
 
