@@ -32,3 +32,246 @@ export const simulatorQueueReservationSchema = z.object({
   dedupeKey: z.string().min(1),
   pendingItems: z.number().int().min(0),
 });
+
+const decimalPattern = /^-?\d+(?:\.\d+)?$/;
+
+export const decimalValueSchema = z.string().regex(decimalPattern);
+export const isoTimestampSchema = z.string().datetime();
+export const currencyCodeSchema = z.string().trim().length(3).toUpperCase();
+
+export const simulationAccountStatusSchema = z.enum([
+  'active',
+  'paused',
+  'closed',
+]);
+export const simulatedOrderSideSchema = z.enum(['buy', 'sell']);
+export const simulatedOrderTypeSchema = z.enum([
+  'market',
+  'limit',
+  'stop',
+  'stop-limit',
+]);
+export const simulatedOrderStatusSchema = z.enum([
+  'accepted',
+  'partially-filled',
+  'filled',
+  'canceled',
+  'rejected',
+]);
+export const simulatorEventTypeSchema = z.enum([
+  'trade-intent-accepted',
+  'trade-intent-rejected',
+  'order-submitted',
+  'order-partially-filled',
+  'order-filled',
+  'order-canceled',
+  'position-revalued',
+  'portfolio-snapshotted',
+  'account-adjusted',
+]);
+export const simulatorPersistenceEntitySchema = z.enum([
+  'simulation-account',
+  'simulated-order',
+  'simulated-fill',
+  'simulator-event',
+  'position',
+  'portfolio',
+  'portfolio-snapshot',
+]);
+export const simulatorPersistenceStorageKindSchema = z.enum([
+  'append-only',
+  'current-state',
+  'point-in-time-snapshot',
+]);
+export const simulatorPersistenceTruthKindSchema = z.enum([
+  'system-of-record',
+  'derived-view',
+]);
+
+export const simulationAccountSchema = z.object({
+  simulationAccountId: z.string().min(1),
+  baseCurrency: currencyCodeSchema,
+  startingBalance: decimalValueSchema,
+  currentCashBalance: decimalValueSchema,
+  status: simulationAccountStatusSchema,
+  createdTimestamp: isoTimestampSchema,
+  configurationVersion: z.string().min(1),
+});
+
+export const portfolioSchema = z.object({
+  portfolioId: z.string().min(1),
+  simulationAccountId: z.string().min(1),
+  netLiquidationValue: decimalValueSchema,
+  grossExposure: decimalValueSchema,
+  realizedPnl: decimalValueSchema,
+  unrealizedPnl: decimalValueSchema,
+  valuationTimestamp: isoTimestampSchema,
+});
+
+export const positionSchema = z.object({
+  positionId: z.string().min(1),
+  simulationAccountId: z.string().min(1),
+  instrumentId: z.string().min(1),
+  quantity: decimalValueSchema,
+  averageEntryCost: decimalValueSchema,
+  marketValue: decimalValueSchema,
+  realizedPnl: decimalValueSchema,
+  unrealizedPnl: decimalValueSchema,
+  lastUpdatedTimestamp: isoTimestampSchema,
+});
+
+export const simulatedOrderSchema = z.object({
+  simulatedOrderId: z.string().min(1),
+  simulationAccountId: z.string().min(1),
+  tradeIntentId: z.string().min(1),
+  instrumentId: z.string().min(1),
+  side: simulatedOrderSideSchema,
+  orderType: simulatedOrderTypeSchema,
+  requestedQuantity: decimalValueSchema,
+  acceptedQuantity: decimalValueSchema,
+  status: simulatedOrderStatusSchema,
+  submittedTimestamp: isoTimestampSchema,
+  executionModelVersion: z.string().min(1),
+});
+
+export const simulatedFillSchema = z.object({
+  simulatedFillId: z.string().min(1),
+  simulatedOrderId: z.string().min(1),
+  simulationAccountId: z.string().min(1),
+  instrumentId: z.string().min(1),
+  fillQuantity: decimalValueSchema,
+  fillPrice: decimalValueSchema,
+  simulatedFeeAmount: decimalValueSchema,
+  slippageAmount: decimalValueSchema,
+  fillTimestamp: isoTimestampSchema,
+});
+
+export const portfolioSnapshotSchema = z.object({
+  snapshotId: z.string().min(1),
+  simulationAccountId: z.string().min(1),
+  cashBalance: decimalValueSchema,
+  grossExposure: decimalValueSchema,
+  netLiquidationValue: decimalValueSchema,
+  realizedPnl: decimalValueSchema,
+  unrealizedPnl: decimalValueSchema,
+  timestamp: isoTimestampSchema,
+  sourceEventId: z.string().min(1),
+});
+
+export const tradeIntentAcceptedEventPayloadSchema = z.object({
+  tradeIntentId: z.string().min(1),
+  instrumentId: z.string().min(1),
+  side: simulatedOrderSideSchema,
+  requestedQuantity: decimalValueSchema,
+});
+
+export const tradeIntentRejectedEventPayloadSchema = z.object({
+  tradeIntentId: z.string().min(1),
+  instrumentId: z.string().min(1),
+  rejectionReason: z.string().min(1),
+});
+
+export const orderSubmittedEventPayloadSchema = z.object({
+  simulatedOrderId: z.string().min(1),
+  tradeIntentId: z.string().min(1),
+  acceptedQuantity: decimalValueSchema,
+});
+
+export const orderPartiallyFilledEventPayloadSchema = z.object({
+  simulatedOrderId: z.string().min(1),
+  simulatedFillId: z.string().min(1),
+  cumulativeFilledQuantity: decimalValueSchema,
+  remainingQuantity: decimalValueSchema,
+});
+
+export const orderFilledEventPayloadSchema = z.object({
+  simulatedOrderId: z.string().min(1),
+  simulatedFillId: z.string().min(1),
+  cumulativeFilledQuantity: decimalValueSchema,
+});
+
+export const orderCanceledEventPayloadSchema = z.object({
+  simulatedOrderId: z.string().min(1),
+  cancellationReason: z.string().min(1),
+});
+
+export const positionRevaluedEventPayloadSchema = z.object({
+  positionId: z.string().min(1),
+  instrumentId: z.string().min(1),
+  marketValue: decimalValueSchema,
+  unrealizedPnl: decimalValueSchema,
+});
+
+export const portfolioSnapshottedEventPayloadSchema = z.object({
+  snapshotId: z.string().min(1),
+  netLiquidationValue: decimalValueSchema,
+});
+
+export const accountAdjustedEventPayloadSchema = z.object({
+  adjustmentId: z.string().min(1),
+  reason: z.string().min(1),
+  amount: decimalValueSchema,
+});
+
+export const simulatorEventPayloadSchema = z.discriminatedUnion('eventType', [
+  z.object({
+    eventType: z.literal('trade-intent-accepted'),
+    payload: tradeIntentAcceptedEventPayloadSchema,
+  }),
+  z.object({
+    eventType: z.literal('trade-intent-rejected'),
+    payload: tradeIntentRejectedEventPayloadSchema,
+  }),
+  z.object({
+    eventType: z.literal('order-submitted'),
+    payload: orderSubmittedEventPayloadSchema,
+  }),
+  z.object({
+    eventType: z.literal('order-partially-filled'),
+    payload: orderPartiallyFilledEventPayloadSchema,
+  }),
+  z.object({
+    eventType: z.literal('order-filled'),
+    payload: orderFilledEventPayloadSchema,
+  }),
+  z.object({
+    eventType: z.literal('order-canceled'),
+    payload: orderCanceledEventPayloadSchema,
+  }),
+  z.object({
+    eventType: z.literal('position-revalued'),
+    payload: positionRevaluedEventPayloadSchema,
+  }),
+  z.object({
+    eventType: z.literal('portfolio-snapshotted'),
+    payload: portfolioSnapshottedEventPayloadSchema,
+  }),
+  z.object({
+    eventType: z.literal('account-adjusted'),
+    payload: accountAdjustedEventPayloadSchema,
+  }),
+]);
+
+export const simulatorEventEnvelopeSchema = z
+  .object({
+    simulatorEventId: z.string().min(1),
+    simulationAccountId: z.string().min(1),
+    eventType: simulatorEventTypeSchema,
+    eventTimestamp: isoTimestampSchema,
+    recordedTimestamp: isoTimestampSchema,
+    sequenceKey: z.string().min(1),
+    correlationId: z.string().min(1).nullable(),
+    causationId: z.string().min(1).nullable(),
+    schemaVersion: z.number().int().positive(),
+  })
+  .and(simulatorEventPayloadSchema);
+
+export const simulatorPersistenceContractSchema = z.object({
+  entity: simulatorPersistenceEntitySchema,
+  truthKind: simulatorPersistenceTruthKindSchema,
+  storageKind: simulatorPersistenceStorageKindSchema,
+  durable: z.boolean(),
+  identifierFields: z.array(z.string().min(1)).min(1),
+  systemOfRecord: z.boolean(),
+  description: z.string().min(1),
+});

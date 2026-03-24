@@ -34,3 +34,205 @@ export interface SimulatorQueueReservation {
   dedupeKey: string;
   pendingItems: number;
 }
+
+export type CurrencyCode = string;
+export type DecimalValue = string;
+export type IsoTimestamp = string;
+
+export type SimulationAccountStatus = 'active' | 'paused' | 'closed';
+export type SimulatedOrderSide = 'buy' | 'sell';
+export type SimulatedOrderType = 'market' | 'limit' | 'stop' | 'stop-limit';
+export type SimulatedOrderStatus =
+  | 'accepted'
+  | 'partially-filled'
+  | 'filled'
+  | 'canceled'
+  | 'rejected';
+export type SimulatorEventType =
+  | 'trade-intent-accepted'
+  | 'trade-intent-rejected'
+  | 'order-submitted'
+  | 'order-partially-filled'
+  | 'order-filled'
+  | 'order-canceled'
+  | 'position-revalued'
+  | 'portfolio-snapshotted'
+  | 'account-adjusted';
+export type SimulatorPersistenceEntity =
+  | 'simulation-account'
+  | 'simulated-order'
+  | 'simulated-fill'
+  | 'simulator-event'
+  | 'position'
+  | 'portfolio'
+  | 'portfolio-snapshot';
+export type SimulatorPersistenceStorageKind =
+  | 'append-only'
+  | 'current-state'
+  | 'point-in-time-snapshot';
+export type SimulatorPersistenceTruthKind = 'system-of-record' | 'derived-view';
+
+export interface SimulationAccount {
+  simulationAccountId: string;
+  baseCurrency: CurrencyCode;
+  startingBalance: DecimalValue;
+  currentCashBalance: DecimalValue;
+  status: SimulationAccountStatus;
+  createdTimestamp: IsoTimestamp;
+  configurationVersion: string;
+}
+
+export interface Portfolio {
+  portfolioId: string;
+  simulationAccountId: string;
+  netLiquidationValue: DecimalValue;
+  grossExposure: DecimalValue;
+  realizedPnl: DecimalValue;
+  unrealizedPnl: DecimalValue;
+  valuationTimestamp: IsoTimestamp;
+}
+
+export interface Position {
+  positionId: string;
+  simulationAccountId: string;
+  instrumentId: string;
+  quantity: DecimalValue;
+  averageEntryCost: DecimalValue;
+  marketValue: DecimalValue;
+  realizedPnl: DecimalValue;
+  unrealizedPnl: DecimalValue;
+  lastUpdatedTimestamp: IsoTimestamp;
+}
+
+export interface SimulatedOrder {
+  simulatedOrderId: string;
+  simulationAccountId: string;
+  tradeIntentId: string;
+  instrumentId: string;
+  side: SimulatedOrderSide;
+  orderType: SimulatedOrderType;
+  requestedQuantity: DecimalValue;
+  acceptedQuantity: DecimalValue;
+  status: SimulatedOrderStatus;
+  submittedTimestamp: IsoTimestamp;
+  executionModelVersion: string;
+}
+
+export interface SimulatedFill {
+  simulatedFillId: string;
+  simulatedOrderId: string;
+  simulationAccountId: string;
+  instrumentId: string;
+  fillQuantity: DecimalValue;
+  fillPrice: DecimalValue;
+  simulatedFeeAmount: DecimalValue;
+  slippageAmount: DecimalValue;
+  fillTimestamp: IsoTimestamp;
+}
+
+export interface PortfolioSnapshot {
+  snapshotId: string;
+  simulationAccountId: string;
+  cashBalance: DecimalValue;
+  grossExposure: DecimalValue;
+  netLiquidationValue: DecimalValue;
+  realizedPnl: DecimalValue;
+  unrealizedPnl: DecimalValue;
+  timestamp: IsoTimestamp;
+  sourceEventId: string;
+}
+
+export interface TradeIntentAcceptedEventPayload {
+  tradeIntentId: string;
+  instrumentId: string;
+  side: SimulatedOrderSide;
+  requestedQuantity: DecimalValue;
+}
+
+export interface TradeIntentRejectedEventPayload {
+  tradeIntentId: string;
+  instrumentId: string;
+  rejectionReason: string;
+}
+
+export interface OrderSubmittedEventPayload {
+  simulatedOrderId: string;
+  tradeIntentId: string;
+  acceptedQuantity: DecimalValue;
+}
+
+export interface OrderPartiallyFilledEventPayload {
+  simulatedOrderId: string;
+  simulatedFillId: string;
+  cumulativeFilledQuantity: DecimalValue;
+  remainingQuantity: DecimalValue;
+}
+
+export interface OrderFilledEventPayload {
+  simulatedOrderId: string;
+  simulatedFillId: string;
+  cumulativeFilledQuantity: DecimalValue;
+}
+
+export interface OrderCanceledEventPayload {
+  simulatedOrderId: string;
+  cancellationReason: string;
+}
+
+export interface PositionRevaluedEventPayload {
+  positionId: string;
+  instrumentId: string;
+  marketValue: DecimalValue;
+  unrealizedPnl: DecimalValue;
+}
+
+export interface PortfolioSnapshottedEventPayload {
+  snapshotId: string;
+  netLiquidationValue: DecimalValue;
+}
+
+export interface AccountAdjustedEventPayload {
+  adjustmentId: string;
+  reason: string;
+  amount: DecimalValue;
+}
+
+export interface SimulatorEventPayloadMap {
+  'trade-intent-accepted': TradeIntentAcceptedEventPayload;
+  'trade-intent-rejected': TradeIntentRejectedEventPayload;
+  'order-submitted': OrderSubmittedEventPayload;
+  'order-partially-filled': OrderPartiallyFilledEventPayload;
+  'order-filled': OrderFilledEventPayload;
+  'order-canceled': OrderCanceledEventPayload;
+  'position-revalued': PositionRevaluedEventPayload;
+  'portfolio-snapshotted': PortfolioSnapshottedEventPayload;
+  'account-adjusted': AccountAdjustedEventPayload;
+}
+
+export type SimulatorEventPayload =
+  SimulatorEventPayloadMap[SimulatorEventType];
+
+export interface SimulatorEventEnvelope<
+  TType extends SimulatorEventType = SimulatorEventType,
+> {
+  simulatorEventId: string;
+  simulationAccountId: string;
+  eventType: TType;
+  eventTimestamp: IsoTimestamp;
+  recordedTimestamp: IsoTimestamp;
+  sequenceKey: string;
+  correlationId: string | null;
+  causationId: string | null;
+  schemaVersion: number;
+  payload: SimulatorEventPayloadMap[TType];
+}
+
+export interface SimulatorPersistenceContract {
+  entity: SimulatorPersistenceEntity;
+  truthKind: SimulatorPersistenceTruthKind;
+  storageKind: SimulatorPersistenceStorageKind;
+  durable: boolean;
+  identifierFields: string[];
+  systemOfRecord: boolean;
+  description: string;
+}

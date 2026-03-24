@@ -7,9 +7,170 @@ datasource db {
   url      = env("POSTGRES_URL")
 }
 
+enum SimulationAccountStatus {
+  ACTIVE
+  PAUSED
+  CLOSED
+}
+
+enum SimulatedOrderSide {
+  BUY
+  SELL
+}
+
+enum SimulatedOrderType {
+  MARKET
+  LIMIT
+  STOP
+  STOP_LIMIT
+}
+
+enum SimulatedOrderStatus {
+  ACCEPTED
+  PARTIALLY_FILLED
+  FILLED
+  CANCELED
+  REJECTED
+}
+
+enum SimulatorEventType {
+  TRADE_INTENT_ACCEPTED
+  TRADE_INTENT_REJECTED
+  ORDER_SUBMITTED
+  ORDER_PARTIALLY_FILLED
+  ORDER_FILLED
+  ORDER_CANCELED
+  POSITION_REVALUED
+  PORTFOLIO_SNAPSHOTTED
+  ACCOUNT_ADJUSTED
+}
+
 model RuntimeHeartbeat {
   id        String   @id @default(cuid())
   service   String
   startedAt DateTime
   createdAt DateTime @default(now())
+}
+
+model SimulationAccount {
+  id                   String                  @id
+  baseCurrency         String
+  startingBalance      Decimal                 @db.Decimal(20, 8)
+  currentCashBalance   Decimal                 @db.Decimal(20, 8)
+  status               SimulationAccountStatus
+  createdTimestamp     DateTime
+  configurationVersion String
+  updatedAt            DateTime                @updatedAt
+  orders               SimulatedOrder[]
+  fills                SimulatedFill[]
+  events               SimulatorEvent[]
+  positions            Position[]
+  portfolios           Portfolio[]
+  portfolioSnapshots   PortfolioSnapshot[]
+}
+
+model SimulatedOrder {
+  id                    String               @id
+  simulationAccountId   String
+  tradeIntentId         String
+  instrumentId          String
+  side                  SimulatedOrderSide
+  orderType             SimulatedOrderType
+  requestedQuantity     Decimal              @db.Decimal(20, 8)
+  acceptedQuantity      Decimal              @db.Decimal(20, 8)
+  status                SimulatedOrderStatus
+  submittedTimestamp    DateTime
+  executionModelVersion String
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+  simulationAccount     SimulationAccount    @relation(fields: [simulationAccountId], references: [id], onDelete: Restrict)
+  fills                 SimulatedFill[]
+
+  @@index([simulationAccountId])
+  @@index([tradeIntentId])
+}
+
+model SimulatedFill {
+  id                  String            @id
+  simulatedOrderId    String
+  simulationAccountId String
+  instrumentId        String
+  fillQuantity        Decimal           @db.Decimal(20, 8)
+  fillPrice           Decimal           @db.Decimal(20, 8)
+  simulatedFeeAmount  Decimal           @db.Decimal(20, 8)
+  slippageAmount      Decimal           @db.Decimal(20, 8)
+  fillTimestamp       DateTime
+  createdAt           DateTime          @default(now())
+  simulatedOrder      SimulatedOrder    @relation(fields: [simulatedOrderId], references: [id], onDelete: Restrict)
+  simulationAccount   SimulationAccount @relation(fields: [simulationAccountId], references: [id], onDelete: Restrict)
+
+  @@index([simulatedOrderId])
+  @@index([simulationAccountId, instrumentId])
+}
+
+model SimulatorEvent {
+  id                  String            @id
+  simulationAccountId String
+  eventType           SimulatorEventType
+  eventTimestamp      DateTime
+  recordedTimestamp   DateTime
+  sequenceKey         String
+  correlationId       String?
+  causationId         String?
+  schemaVersion       Int
+  payload             Json
+  createdAt           DateTime          @default(now())
+  simulationAccount   SimulationAccount @relation(fields: [simulationAccountId], references: [id], onDelete: Restrict)
+
+  @@unique([simulationAccountId, sequenceKey])
+  @@index([simulationAccountId, eventType, eventTimestamp])
+}
+
+model Position {
+  id                  String            @id
+  simulationAccountId String
+  instrumentId        String
+  quantity            Decimal           @db.Decimal(20, 8)
+  averageEntryCost    Decimal           @db.Decimal(20, 8)
+  marketValue         Decimal           @db.Decimal(20, 8)
+  realizedPnl         Decimal           @db.Decimal(20, 8)
+  unrealizedPnl       Decimal           @db.Decimal(20, 8)
+  lastUpdatedTimestamp DateTime
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  simulationAccount   SimulationAccount @relation(fields: [simulationAccountId], references: [id], onDelete: Restrict)
+
+  @@unique([simulationAccountId, instrumentId])
+}
+
+model Portfolio {
+  id                  String            @id
+  simulationAccountId String
+  netLiquidationValue Decimal           @db.Decimal(20, 8)
+  grossExposure       Decimal           @db.Decimal(20, 8)
+  realizedPnl         Decimal           @db.Decimal(20, 8)
+  unrealizedPnl       Decimal           @db.Decimal(20, 8)
+  valuationTimestamp  DateTime
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  simulationAccount   SimulationAccount @relation(fields: [simulationAccountId], references: [id], onDelete: Restrict)
+
+  @@unique([simulationAccountId])
+}
+
+model PortfolioSnapshot {
+  id                  String            @id
+  simulationAccountId String
+  cashBalance         Decimal           @db.Decimal(20, 8)
+  grossExposure       Decimal           @db.Decimal(20, 8)
+  netLiquidationValue Decimal           @db.Decimal(20, 8)
+  realizedPnl         Decimal           @db.Decimal(20, 8)
+  unrealizedPnl       Decimal           @db.Decimal(20, 8)
+  timestamp           DateTime
+  sourceEventId       String
+  createdAt           DateTime          @default(now())
+  simulationAccount   SimulationAccount @relation(fields: [simulationAccountId], references: [id], onDelete: Restrict)
+
+  @@unique([simulationAccountId, sourceEventId])
+  @@index([simulationAccountId, timestamp])
 }

@@ -3,6 +3,7 @@
   "references": [
     { "path": "./packages/types" },
     { "path": "./packages/schemas" },
+    { "path": "./packages/simulator-core" },
     { "path": "./packages/config" },
     { "path": "./packages/test-utils" },
     { "path": "./apps/api" },
