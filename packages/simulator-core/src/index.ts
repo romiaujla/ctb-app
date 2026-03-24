@@ -6,3 +6,4 @@ export {
   simulatorSystemOfRecordEntities,
 } from './contracts.js';
 export { PrismaSimulatorAccountingRepository } from './repository.js';
+export { replaySimulatorState, verifyDeterministicReplay } from './replay.js';

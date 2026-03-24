@@ -5,7 +5,10 @@ import { promisify } from 'node:util';
 
 import { PrismaClient } from '@prisma/client';
 
-import { PrismaSimulatorAccountingRepository } from '../packages/simulator-core/src/index.ts';
+import {
+  PrismaSimulatorAccountingRepository,
+  verifyDeterministicReplay,
+} from '../packages/simulator-core/src/index.ts';
 import {
   createRuntimeDependencyHarness,
   isContainerRuntimeUnavailable,
@@ -104,6 +107,23 @@ test('simulator accounting repository persists and queries durable portfolio sta
             cumulativeFilledQuantity: '10',
           },
         },
+        {
+          simulatorEventId: 'event-79-3',
+          simulationAccountId: 'acct-79',
+          eventType: 'position-revalued',
+          eventTimestamp: '2026-03-24T15:10:03.000Z',
+          recordedTimestamp: '2026-03-24T15:10:03.010Z',
+          sequenceKey: 'acct-79:00000003',
+          correlationId: 'corr-79',
+          causationId: 'fill-79',
+          schemaVersion: 1,
+          payload: {
+            positionId: 'position-79',
+            instrumentId: 'AAPL',
+            marketValue: '130.00',
+            unrealizedPnl: '5.00',
+          },
+        },
       ],
       fills: [
         {
@@ -150,7 +170,7 @@ test('simulator accounting repository persists and queries durable portfolio sta
           realizedPnl: '0.00',
           unrealizedPnl: '5.00',
           timestamp: '2026-03-24T15:10:03.000Z',
-          sourceEventId: 'event-79-2',
+          sourceEventId: 'event-79-3',
         },
       ],
     });
@@ -161,12 +181,24 @@ test('simulator accounting repository persists and queries durable portfolio sta
     assert.equal(currentView.recentFills[0]?.simulatedFillId, 'fill-79');
 
     const history = await repository.getPortfolioHistory('acct-79');
-    assert.equal(history.events.length, 2);
+    assert.equal(history.orders.length, 1);
+    assert.equal(history.events.length, 3);
     assert.equal(history.fills.length, 1);
-    assert.equal(history.snapshots[0]?.sourceEventId, 'event-79-2');
+    assert.equal(history.snapshots[0]?.sourceEventId, 'event-79-3');
 
     const persistedView = await repository.getCurrentPortfolioView('acct-79');
     assert.equal(persistedView?.openOrders[0]?.status, 'partially-filled');
+
+    const replayVerification = verifyDeterministicReplay({
+      simulationAccount: currentView.simulationAccount,
+      orders: history.orders,
+      currentView: persistedView,
+      events: history.events,
+      fills: history.fills,
+      snapshots: history.snapshots,
+    });
+    assert.equal(replayVerification.currentViewMatched, true);
+    assert.equal(replayVerification.latestSnapshotMatched, true);
   } finally {
     await prisma.$disconnect();
     await harness.stop();
