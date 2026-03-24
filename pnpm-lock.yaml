@@ -108,6 +108,15 @@ importers:
         specifier: ^3.24.2
         version: 3.25.76
 
+  packages/simulator-core:
+    dependencies:
+      '@ctb/schemas':
+        specifier: workspace:*
+        version: link:../schemas
+      '@ctb/types':
+        specifier: workspace:*
+        version: link:../types
+
   packages/test-utils:
     dependencies:
       '@ctb/types':
