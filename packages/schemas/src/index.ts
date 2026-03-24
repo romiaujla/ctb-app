@@ -275,3 +275,27 @@ export const simulatorPersistenceContractSchema = z.object({
   systemOfRecord: z.boolean(),
   description: z.string().min(1),
 });
+
+export const simulatorPortfolioViewSchema = z.object({
+  simulationAccount: simulationAccountSchema,
+  portfolio: portfolioSchema.nullable(),
+  positions: z.array(positionSchema),
+  openOrders: z.array(simulatedOrderSchema),
+  recentFills: z.array(simulatedFillSchema),
+});
+
+export const simulatorPortfolioHistorySchema = z.object({
+  events: z.array(simulatorEventEnvelopeSchema),
+  fills: z.array(simulatedFillSchema),
+  snapshots: z.array(portfolioSnapshotSchema),
+});
+
+export const persistSimulatorAccountingInputSchema = z.object({
+  simulationAccount: simulationAccountSchema,
+  orders: z.array(simulatedOrderSchema).optional(),
+  fills: z.array(simulatedFillSchema).optional(),
+  events: z.array(simulatorEventEnvelopeSchema),
+  positions: z.array(positionSchema).optional(),
+  portfolio: portfolioSchema.optional(),
+  snapshots: z.array(portfolioSnapshotSchema).optional(),
+});
