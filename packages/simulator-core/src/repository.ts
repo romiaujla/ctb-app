@@ -344,7 +344,12 @@ async function getPortfolioHistoryWithClient(
         }
       : undefined;
 
-  const [events, fills, snapshots] = await Promise.all([
+  const [orders, events, fills, snapshots] = await Promise.all([
+    client.simulatedOrder.findMany({
+      where: { simulationAccountId },
+      orderBy: [{ submittedTimestamp: 'asc' }],
+      take: options.limit,
+    }),
     client.simulatorEvent.findMany({
       where: {
         simulationAccountId,
@@ -372,6 +377,7 @@ async function getPortfolioHistoryWithClient(
   ]);
 
   return simulatorPortfolioHistorySchema.parse({
+    orders: orders.map(mapSimulatedOrder),
     events: events.map(mapSimulatorEvent),
     fills: fills.map(mapSimulatedFill),
     snapshots: snapshots.map(mapPortfolioSnapshot),

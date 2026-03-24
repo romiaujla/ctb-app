@@ -5,7 +5,10 @@ import { promisify } from 'node:util';
 
 import { PrismaClient } from '@prisma/client';
 
-import { PrismaSimulatorAccountingRepository } from '../packages/simulator-core/src/index.ts';
+import {
+  PrismaSimulatorAccountingRepository,
+  verifyDeterministicReplay,
+} from '../packages/simulator-core/src/index.ts';
 import {
   createRuntimeDependencyHarness,
   isContainerRuntimeUnavailable,
@@ -161,12 +164,24 @@ test('simulator accounting repository persists and queries durable portfolio sta
     assert.equal(currentView.recentFills[0]?.simulatedFillId, 'fill-79');
 
     const history = await repository.getPortfolioHistory('acct-79');
+    assert.equal(history.orders.length, 1);
     assert.equal(history.events.length, 2);
     assert.equal(history.fills.length, 1);
     assert.equal(history.snapshots[0]?.sourceEventId, 'event-79-2');
 
     const persistedView = await repository.getCurrentPortfolioView('acct-79');
     assert.equal(persistedView?.openOrders[0]?.status, 'partially-filled');
+
+    const replayVerification = verifyDeterministicReplay({
+      simulationAccount: currentView.simulationAccount,
+      orders: history.orders,
+      currentView: persistedView,
+      events: history.events,
+      fills: history.fills,
+      snapshots: history.snapshots,
+    });
+    assert.equal(replayVerification.currentViewMatched, true);
+    assert.equal(replayVerification.latestSnapshotMatched, true);
   } finally {
     await prisma.$disconnect();
     await harness.stop();

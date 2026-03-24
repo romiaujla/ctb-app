@@ -285,6 +285,7 @@ export const simulatorPortfolioViewSchema = z.object({
 });
 
 export const simulatorPortfolioHistorySchema = z.object({
+  orders: z.array(simulatedOrderSchema),
   events: z.array(simulatorEventEnvelopeSchema),
   fills: z.array(simulatedFillSchema),
   snapshots: z.array(portfolioSnapshotSchema),
@@ -298,4 +299,42 @@ export const persistSimulatorAccountingInputSchema = z.object({
   positions: z.array(positionSchema).optional(),
   portfolio: portfolioSchema.optional(),
   snapshots: z.array(portfolioSnapshotSchema).optional(),
+});
+
+export const replayableSimulatorStateSchema = z.object({
+  simulationAccount: simulationAccountSchema,
+  orders: z.array(simulatedOrderSchema),
+  events: z.array(simulatorEventEnvelopeSchema),
+  fills: z.array(simulatedFillSchema),
+  snapshots: z.array(portfolioSnapshotSchema).optional(),
+  currentView: simulatorPortfolioViewSchema.nullable().optional(),
+});
+
+export const simulatorReplayPositionSchema = z.object({
+  instrumentId: z.string().min(1),
+  quantity: decimalValueSchema,
+  averageEntryCost: decimalValueSchema,
+  marketValue: decimalValueSchema,
+  realizedPnl: decimalValueSchema,
+  unrealizedPnl: decimalValueSchema,
+});
+
+export const simulatorReplayResultSchema = z.object({
+  simulationAccountId: z.string().min(1),
+  cashBalance: decimalValueSchema,
+  grossExposure: decimalValueSchema,
+  netLiquidationValue: decimalValueSchema,
+  realizedPnl: decimalValueSchema,
+  unrealizedPnl: decimalValueSchema,
+  processedEventIds: z.array(z.string().min(1)),
+  processedFillIds: z.array(z.string().min(1)),
+  positions: z.array(simulatorReplayPositionSchema),
+  replayDigest: z.string().min(1),
+});
+
+export const simulatorReplayVerificationSchema = z.object({
+  replay: simulatorReplayResultSchema,
+  latestSnapshotId: z.string().min(1).nullable(),
+  currentViewMatched: z.boolean(),
+  latestSnapshotMatched: z.boolean(),
 });

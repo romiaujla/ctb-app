@@ -252,6 +252,7 @@ export interface SimulatorPortfolioView {
 }
 
 export interface SimulatorPortfolioHistory {
+  orders: SimulatedOrder[];
   events: SimulatorEventEnvelope[];
   fills: SimulatedFill[];
   snapshots: PortfolioSnapshot[];
@@ -278,4 +279,42 @@ export interface SimulatorAccountingRepository {
     simulationAccountId: string,
     options?: SimulatorHistoryQueryOptions,
   ): Promise<SimulatorPortfolioHistory>;
+}
+
+export interface ReplayableSimulatorState {
+  simulationAccount: SimulationAccount;
+  orders: SimulatedOrder[];
+  events: SimulatorEventEnvelope[];
+  fills: SimulatedFill[];
+  snapshots?: PortfolioSnapshot[];
+  currentView?: SimulatorPortfolioView | null;
+}
+
+export interface SimulatorReplayPosition {
+  instrumentId: string;
+  quantity: DecimalValue;
+  averageEntryCost: DecimalValue;
+  marketValue: DecimalValue;
+  realizedPnl: DecimalValue;
+  unrealizedPnl: DecimalValue;
+}
+
+export interface SimulatorReplayResult {
+  simulationAccountId: string;
+  cashBalance: DecimalValue;
+  grossExposure: DecimalValue;
+  netLiquidationValue: DecimalValue;
+  realizedPnl: DecimalValue;
+  unrealizedPnl: DecimalValue;
+  processedEventIds: string[];
+  processedFillIds: string[];
+  positions: SimulatorReplayPosition[];
+  replayDigest: string;
+}
+
+export interface SimulatorReplayVerification {
+  replay: SimulatorReplayResult;
+  latestSnapshotId: string | null;
+  currentViewMatched: boolean;
+  latestSnapshotMatched: boolean;
 }
