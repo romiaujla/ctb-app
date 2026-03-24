@@ -87,6 +87,7 @@ model SimulatedOrder {
   fills                 SimulatedFill[]
 
   @@index([simulationAccountId])
+  @@index([simulationAccountId, status])
   @@index([tradeIntentId])
 }
 
@@ -105,6 +106,7 @@ model SimulatedFill {
   simulationAccount   SimulationAccount @relation(fields: [simulationAccountId], references: [id], onDelete: Restrict)
 
   @@index([simulatedOrderId])
+  @@index([simulationAccountId, fillTimestamp])
   @@index([simulationAccountId, instrumentId])
 }
 
@@ -121,6 +123,7 @@ model SimulatorEvent {
   payload             Json
   createdAt           DateTime          @default(now())
   simulationAccount   SimulationAccount @relation(fields: [simulationAccountId], references: [id], onDelete: Restrict)
+  portfolioSnapshots  PortfolioSnapshot[]
 
   @@unique([simulationAccountId, sequenceKey])
   @@index([simulationAccountId, eventType, eventTimestamp])
@@ -170,6 +173,7 @@ model PortfolioSnapshot {
   sourceEventId       String
   createdAt           DateTime          @default(now())
   simulationAccount   SimulationAccount @relation(fields: [simulationAccountId], references: [id], onDelete: Restrict)
+  sourceEvent         SimulatorEvent    @relation(fields: [sourceEventId], references: [id], onDelete: Restrict)
 
   @@unique([simulationAccountId, sourceEventId])
   @@index([simulationAccountId, timestamp])

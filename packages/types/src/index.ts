@@ -236,3 +236,46 @@ export interface SimulatorPersistenceContract {
   systemOfRecord: boolean;
   description: string;
 }
+
+export interface SimulatorHistoryQueryOptions {
+  limit?: number;
+  fromTimestamp?: IsoTimestamp;
+  toTimestamp?: IsoTimestamp;
+}
+
+export interface SimulatorPortfolioView {
+  simulationAccount: SimulationAccount;
+  portfolio: Portfolio | null;
+  positions: Position[];
+  openOrders: SimulatedOrder[];
+  recentFills: SimulatedFill[];
+}
+
+export interface SimulatorPortfolioHistory {
+  events: SimulatorEventEnvelope[];
+  fills: SimulatedFill[];
+  snapshots: PortfolioSnapshot[];
+}
+
+export interface PersistSimulatorAccountingInput {
+  simulationAccount: SimulationAccount;
+  orders?: SimulatedOrder[];
+  fills?: SimulatedFill[];
+  events: SimulatorEventEnvelope[];
+  positions?: Position[];
+  portfolio?: Portfolio;
+  snapshots?: PortfolioSnapshot[];
+}
+
+export interface SimulatorAccountingRepository {
+  persist(
+    input: PersistSimulatorAccountingInput,
+  ): Promise<SimulatorPortfolioView>;
+  getCurrentPortfolioView(
+    simulationAccountId: string,
+  ): Promise<SimulatorPortfolioView | null>;
+  getPortfolioHistory(
+    simulationAccountId: string,
+    options?: SimulatorHistoryQueryOptions,
+  ): Promise<SimulatorPortfolioHistory>;
+}
