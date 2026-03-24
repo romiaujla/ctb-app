@@ -227,7 +227,9 @@ async function assertReferentialConsistency(
       select: { id: true },
     });
 
-    for (const orderId of existingOrders.map((order) => order.id)) {
+    for (const orderId of existingOrders.map(
+      (order: { id: string }) => order.id,
+    )) {
       orderIds.add(orderId);
     }
 
@@ -258,7 +260,9 @@ async function assertReferentialConsistency(
       select: { id: true },
     });
 
-    for (const eventId of existingEvents.map((event) => event.id)) {
+    for (const eventId of existingEvents.map(
+      (event: { id: string }) => event.id,
+    )) {
       eventIds.add(eventId);
     }
 
@@ -385,7 +389,7 @@ export class PrismaSimulatorAccountingRepository implements SimulatorAccountingR
 
     assertConsistentAccountIds(simulationAccountId, input);
 
-    return this.client.$transaction(async (tx) => {
+    return this.client.$transaction(async (tx: Prisma.TransactionClient) => {
       await assertReferentialConsistency(tx, input);
 
       await tx.simulationAccount.upsert({
