@@ -27,6 +27,118 @@ export interface RuntimeConfig {
   redisUrl: string;
 }
 
+export type MarketDataEventType = 'quote' | 'trade' | 'bar' | 'status';
+export type MarketDataSessionState =
+  | 'preMarket'
+  | 'regular'
+  | 'afterHours'
+  | 'closed';
+export type MarketDataQuality = 'valid' | 'partial' | 'stale' | 'invalid';
+export type MarketDataFreshnessState =
+  | 'ready'
+  | 'delayed'
+  | 'stale'
+  | 'partial'
+  | 'invalid'
+  | 'unavailable';
+
+export interface MarketDataQuotePayload {
+  bidPrice: DecimalValue | null;
+  askPrice: DecimalValue | null;
+  bidSize: number | null;
+  askSize: number | null;
+  midPrice: DecimalValue | null;
+  lastTradePrice: DecimalValue | null;
+}
+
+export interface MarketDataTradePayload {
+  tradePrice: DecimalValue | null;
+  tradeSize: number | null;
+  tradeCondition: string | null;
+  exchange: string | null;
+}
+
+export interface MarketDataBarPayload {
+  open: DecimalValue | null;
+  high: DecimalValue | null;
+  low: DecimalValue | null;
+  close: DecimalValue | null;
+  volume: number | null;
+  vwap: DecimalValue | null;
+  barStartTimestamp: IsoTimestamp | null;
+  barEndTimestamp: IsoTimestamp | null;
+  barResolution: string | null;
+}
+
+export interface MarketDataStatusPayload {
+  tradingStatus: string | null;
+  haltReason: string | null;
+  tradable: boolean | null;
+}
+
+export interface MarketDataPayloadMap {
+  quote: MarketDataQuotePayload;
+  trade: MarketDataTradePayload;
+  bar: MarketDataBarPayload;
+  status: MarketDataStatusPayload;
+}
+
+export type MarketDataPayload = MarketDataPayloadMap[MarketDataEventType];
+
+export interface CanonicalMarketDataEvent<
+  TType extends MarketDataEventType = MarketDataEventType,
+> {
+  eventId: string;
+  eventType: TType;
+  instrumentId: string;
+  symbol: string;
+  provider: string;
+  providerEventId: string | null;
+  providerTimestamp: IsoTimestamp;
+  observedTimestamp: IsoTimestamp;
+  normalizedTimestamp: IsoTimestamp;
+  sessionState: MarketDataSessionState;
+  quality: MarketDataQuality;
+  freshnessState: MarketDataFreshnessState;
+  sourceLatencyMs: number | null;
+  rawReference: string | null;
+  normalizationVersion: string;
+  payload: MarketDataPayloadMap[TType];
+}
+
+export interface MarketDataNormalizationInput<
+  TType extends MarketDataEventType = MarketDataEventType,
+> {
+  ingestRunId: string;
+  rawRecordId: string;
+  provider: string;
+  providerSymbol: string | null;
+  providerEventId: string | null;
+  instrumentId: string;
+  symbol: string;
+  eventType: TType;
+  providerTimestamp: IsoTimestamp;
+  observedTimestamp: IsoTimestamp;
+  normalizedTimestamp?: IsoTimestamp;
+  sessionState: MarketDataSessionState;
+  rawReference: string | null;
+  normalizationVersion: string;
+  payload: MarketDataPayloadMap[TType];
+}
+
+export interface MarketDataFreshnessThresholdWindow {
+  readyMs: number;
+  delayedMs: number;
+}
+
+export interface MarketDataFreshnessThresholds {
+  regular: Record<MarketDataEventType, MarketDataFreshnessThresholdWindow>;
+  preMarket: Record<MarketDataEventType, MarketDataFreshnessThresholdWindow>;
+  afterHours: Record<MarketDataEventType, MarketDataFreshnessThresholdWindow>;
+  closed: Record<MarketDataEventType, MarketDataFreshnessThresholdWindow>;
+  maxFutureSkewMs: number;
+}
+
 export interface SimulatorQueueReservation {
   accepted: boolean;
   eventId: string;

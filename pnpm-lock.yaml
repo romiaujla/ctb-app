@@ -74,6 +74,9 @@ importers:
       '@ctb/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ctb/market-data':
+        specifier: workspace:*
+        version: link:../../packages/market-data
       '@ctb/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
