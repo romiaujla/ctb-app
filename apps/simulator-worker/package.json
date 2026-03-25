@@ -11,6 +11,7 @@
     "@ctb/config": "workspace:*",
     "@ctb/market-data": "workspace:*",
     "@ctb/schemas": "workspace:*",
+    "@ctb/simulator-core": "workspace:*",
     "@ctb/test-utils": "workspace:*",
     "@ctb/types": "workspace:*",
     "ioredis": "^5.8.1"

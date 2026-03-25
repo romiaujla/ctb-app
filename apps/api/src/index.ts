@@ -7,7 +7,16 @@ import {
   type MarketDataRepository,
 } from '@ctb/market-data';
 import { serviceRuntimeDescriptorSchema } from '@ctb/schemas';
-import type { ServiceRuntimeDescriptor } from '@ctb/types';
+import {
+  PrismaSimulatorAccountingRepository,
+  PrismaStrategyEvaluationRepository,
+  runStrategyEvaluation,
+} from '@ctb/simulator-core';
+import type {
+  ServiceRuntimeDescriptor,
+  SimulatorAccountingRepository,
+  StrategyEvaluationRepository,
+} from '@ctb/types';
 import { PrismaClient } from '@prisma/client';
 
 function summarizeMarketDataHealth({
@@ -49,6 +58,8 @@ function summarizeMarketDataHealth({
 
 export function createApiRequestHandler(options?: {
   marketDataRepository?: MarketDataRepository;
+  simulatorAccountingRepository?: SimulatorAccountingRepository;
+  strategyEvaluationRepository?: StrategyEvaluationRepository;
 }) {
   return async (
     request: http.IncomingMessage,
@@ -82,6 +93,89 @@ export function createApiRequestHandler(options?: {
         ),
       );
       return;
+    }
+
+    if (
+      requestUrl.pathname === '/api/v1/strategy/evaluations' &&
+      options?.strategyEvaluationRepository
+    ) {
+      const limitValue = requestUrl.searchParams.get('limit');
+      const evaluations =
+        await options.strategyEvaluationRepository.getRecentEvaluations({
+          limit: limitValue ? Number(limitValue) : undefined,
+          strategyId: requestUrl.searchParams.get('strategyId') ?? undefined,
+          instrumentId:
+            requestUrl.searchParams.get('instrumentId') ?? undefined,
+          decisionState:
+            (requestUrl.searchParams.get('decisionState') as
+              | 'trade-intent-emitted'
+              | 'skipped'
+              | 'blocked'
+              | 'invalid-input'
+              | null) ?? undefined,
+        });
+
+      response.writeHead(200, { 'content-type': 'application/json' });
+      response.end(JSON.stringify({ evaluations }));
+      return;
+    }
+
+    if (
+      requestUrl.pathname === '/api/v1/strategy/evaluate' &&
+      options?.marketDataRepository &&
+      options?.simulatorAccountingRepository &&
+      options?.strategyEvaluationRepository
+    ) {
+      const simulationAccountId =
+        requestUrl.searchParams.get('simulationAccountId') ?? undefined;
+      const instrumentId =
+        requestUrl.searchParams.get('instrumentId') ?? undefined;
+
+      if (!simulationAccountId || !instrumentId) {
+        response.writeHead(400, { 'content-type': 'application/json' });
+        response.end(
+          JSON.stringify({
+            error:
+              'simulationAccountId and instrumentId are required to evaluate strategy state.',
+          }),
+        );
+        return;
+      }
+
+      try {
+        const evaluation = await runStrategyEvaluation(
+          {
+            simulationAccountId,
+            instrumentId,
+            strategyId: requestUrl.searchParams.get('strategyId') ?? undefined,
+            strategyVersion:
+              requestUrl.searchParams.get('strategyVersion') ?? undefined,
+            evaluationTimestamp:
+              requestUrl.searchParams.get('evaluationTimestamp') ?? undefined,
+          },
+          {
+            marketDataRepository: options.marketDataRepository,
+            simulatorAccountingRepository:
+              options.simulatorAccountingRepository,
+            strategyEvaluationRepository: options.strategyEvaluationRepository,
+          },
+        );
+
+        response.writeHead(200, { 'content-type': 'application/json' });
+        response.end(JSON.stringify({ evaluation }));
+        return;
+      } catch (error) {
+        if (
+          error instanceof Error &&
+          /Simulation account .* is not available/.test(error.message)
+        ) {
+          response.writeHead(404, { 'content-type': 'application/json' });
+          response.end(JSON.stringify({ error: error.message }));
+          return;
+        }
+
+        throw error;
+      }
     }
 
     if (
@@ -136,6 +230,8 @@ export async function startApiWorkspace(
   rawEnvironment: NodeJS.ProcessEnv = process.env,
   options?: {
     marketDataRepository?: MarketDataRepository;
+    simulatorAccountingRepository?: SimulatorAccountingRepository;
+    strategyEvaluationRepository?: StrategyEvaluationRepository;
   },
 ) {
   const serviceEnvironment = {
@@ -152,9 +248,19 @@ export async function startApiWorkspace(
   const marketDataRepository =
     options?.marketDataRepository ??
     (prisma ? new PrismaMarketDataRepository(prisma) : undefined);
+  const simulatorAccountingRepository =
+    options?.simulatorAccountingRepository ??
+    (prisma ? new PrismaSimulatorAccountingRepository(prisma) : undefined);
+  const strategyEvaluationRepository =
+    options?.strategyEvaluationRepository ??
+    (prisma ? new PrismaStrategyEvaluationRepository(prisma) : undefined);
 
   const server = http.createServer(
-    createApiRequestHandler({ marketDataRepository }),
+    createApiRequestHandler({
+      marketDataRepository,
+      simulatorAccountingRepository,
+      strategyEvaluationRepository,
+    }),
   );
 
   await new Promise<void>((resolve) => {

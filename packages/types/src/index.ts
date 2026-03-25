@@ -553,6 +553,14 @@ export interface StrategyEvaluationQueryOptions {
   decisionState?: StrategyDecisionState;
 }
 
+export interface StrategyEvaluationRequest {
+  simulationAccountId: string;
+  instrumentId: string;
+  strategyId?: string;
+  strategyVersion?: string;
+  evaluationTimestamp?: IsoTimestamp;
+}
+
 export interface StrategyEvaluationRepository {
   persistEvaluation(
     input: StrategyEvaluationRecord,

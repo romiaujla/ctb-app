@@ -589,3 +589,11 @@ export const strategyEvaluationQueryOptionsSchema = z.object({
   instrumentId: z.string().min(1).optional(),
   decisionState: strategyDecisionStateSchema.optional(),
 });
+
+export const strategyEvaluationRequestSchema = z.object({
+  simulationAccountId: z.string().min(1),
+  instrumentId: z.string().min(1),
+  strategyId: z.string().min(1).optional(),
+  strategyVersion: z.string().min(1).optional(),
+  evaluationTimestamp: isoTimestampSchema.optional(),
+});

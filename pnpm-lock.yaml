@@ -50,6 +50,9 @@ importers:
       '@ctb/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
+      '@ctb/simulator-core':
+        specifier: workspace:*
+        version: link:../../packages/simulator-core
       '@ctb/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -86,6 +89,9 @@ importers:
       '@ctb/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
+      '@ctb/simulator-core':
+        specifier: workspace:*
+        version: link:../../packages/simulator-core
       '@ctb/test-utils':
         specifier: workspace:*
         version: link:../../packages/test-utils
@@ -137,6 +143,9 @@ importers:
 
   packages/simulator-core:
     dependencies:
+      '@ctb/market-data':
+        specifier: workspace:*
+        version: link:../market-data
       '@ctb/schemas':
         specifier: workspace:*
         version: link:../schemas
