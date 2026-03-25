@@ -570,3 +570,82 @@ export interface StrategyEvaluationRepository {
     options?: StrategyEvaluationQueryOptions,
   ): Promise<StrategyEvaluationRecord[]>;
 }
+
+export type OperatorStatusLevel =
+  | 'healthy'
+  | 'warning'
+  | 'degraded'
+  | 'empty'
+  | 'unavailable';
+
+export interface OperatorSectionStatus {
+  key: string;
+  label: string;
+  status: OperatorStatusLevel;
+  summary: string;
+  detailPath: string | null;
+  updatedAt: IsoTimestamp | null;
+}
+
+export interface OperatorOverview {
+  overallStatus: OperatorStatusLevel;
+  generatedAt: IsoTimestamp;
+  docsUrl: string;
+  sections: OperatorSectionStatus[];
+}
+
+export interface ControlPlaneWorkflowStatus {
+  key: string;
+  label: string;
+  status: OperatorStatusLevel;
+  summary: string;
+  updatedAt: IsoTimestamp | null;
+}
+
+export interface SimulatorOperatorSummary {
+  status: OperatorStatusLevel;
+  simulationAccountId: string | null;
+  accountStatus: SimulationAccountStatus | null;
+  netLiquidationValue: DecimalValue | null;
+  openPositionCount: number;
+  openOrderCount: number;
+  recentFillCount: number;
+  summary: string;
+  updatedAt: IsoTimestamp | null;
+}
+
+export interface StrategyActiveSummary {
+  status: OperatorStatusLevel;
+  strategyId: string | null;
+  strategyVersion: string | null;
+  latestDecisionState: StrategyDecisionState | null;
+  latestDecisionReason: string;
+  updatedAt: IsoTimestamp | null;
+}
+
+export interface StrategyReviewSummary {
+  status: OperatorStatusLevel;
+  reviewWindowSize: number;
+  emittedCount: number;
+  skippedCount: number;
+  blockedCount: number;
+  invalidCount: number;
+  recentReasons: string[];
+  updatedAt: IsoTimestamp | null;
+}
+
+export interface ReportAvailabilitySummary {
+  status: OperatorStatusLevel;
+  latestReportDate: string | null;
+  latestReportUrl: string | null;
+  historyUrl: string | null;
+  summary: string;
+  updatedAt: IsoTimestamp | null;
+}
+
+export interface NotificationAvailabilitySummary {
+  status: OperatorStatusLevel;
+  unresolvedCount: number;
+  summary: string;
+  updatedAt: IsoTimestamp | null;
+}
