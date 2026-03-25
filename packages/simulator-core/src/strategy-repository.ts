@@ -1,4 +1,8 @@
-import { Prisma, PrismaClient } from '@prisma/client';
+import prismaClientPackage from '@prisma/client';
+import { Decimal } from '@prisma/client/runtime/library';
+import type { Prisma } from '@prisma/client';
+
+const { PrismaClient } = prismaClientPackage;
 import {
   strategyEvaluationQueryOptionsSchema,
   strategyEvaluationRecordSchema,
@@ -45,7 +49,7 @@ const simulatedOrderTypeMap = {
   'stop-limit': 'STOP_LIMIT',
 } as const;
 
-function fromDecimal(value: Prisma.Decimal): string {
+function fromDecimal(value: Decimal): string {
   return value.toFixed();
 }
 
@@ -220,7 +224,7 @@ export class PrismaStrategyEvaluationRepository implements StrategyEvaluationRep
             instrumentId: input.tradeIntent.instrumentId,
             symbol: input.tradeIntent.symbol,
             side: simulatedOrderSideMap[input.tradeIntent.side],
-            requestedQuantity: new Prisma.Decimal(
+            requestedQuantity: new Decimal(
               input.tradeIntent.requestedQuantity,
             ),
             orderType: simulatedOrderTypeMap[input.tradeIntent.orderType],
@@ -237,7 +241,7 @@ export class PrismaStrategyEvaluationRepository implements StrategyEvaluationRep
             instrumentId: input.tradeIntent.instrumentId,
             symbol: input.tradeIntent.symbol,
             side: simulatedOrderSideMap[input.tradeIntent.side],
-            requestedQuantity: new Prisma.Decimal(
+            requestedQuantity: new Decimal(
               input.tradeIntent.requestedQuantity,
             ),
             orderType: simulatedOrderTypeMap[input.tradeIntent.orderType],
