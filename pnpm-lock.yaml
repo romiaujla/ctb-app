@@ -44,12 +44,18 @@ importers:
       '@ctb/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ctb/market-data':
+        specifier: workspace:*
+        version: link:../../packages/market-data
       '@ctb/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
       '@ctb/types':
         specifier: workspace:*
         version: link:../../packages/types
+      '@prisma/client':
+        specifier: ^6.7.0
+        version: 6.19.2(prisma@6.19.2(typescript@5.9.3))(typescript@5.9.3)
 
   apps/notification-worker:
     dependencies:
@@ -95,6 +101,9 @@ importers:
       '@ctb/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@ctb/market-data':
+        specifier: workspace:*
+        version: link:../../packages/market-data
 
   packages/config:
     dependencies:

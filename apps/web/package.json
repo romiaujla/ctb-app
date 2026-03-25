@@ -8,6 +8,7 @@
     "typecheck": "tsc --project tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@ctb/config": "workspace:*"
+    "@ctb/config": "workspace:*",
+    "@ctb/market-data": "workspace:*"
   }
 }
