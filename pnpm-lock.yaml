@@ -102,6 +102,21 @@ importers:
         specifier: workspace:*
         version: link:../types
 
+  packages/market-data:
+    dependencies:
+      '@ctb/schemas':
+        specifier: workspace:*
+        version: link:../schemas
+      '@ctb/types':
+        specifier: workspace:*
+        version: link:../types
+      '@prisma/client':
+        specifier: ^6.7.0
+        version: 6.19.2(prisma@6.19.2(typescript@5.9.3))(typescript@5.9.3)
+      zod:
+        specifier: ^3.24.2
+        version: 3.25.76
+
   packages/schemas:
     dependencies:
       zod:
