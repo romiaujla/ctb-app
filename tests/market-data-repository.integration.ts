@@ -106,6 +106,8 @@ test('market-data repository persists replay-ready ingest history and query filt
             askPrice: '189.30',
             bidSize: 10,
             askSize: 12,
+            midPrice: '189.28',
+            lastTradePrice: '189.27',
           },
           persistedTimestamp: '2026-03-25T13:00:01.050Z',
         },

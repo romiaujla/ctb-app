@@ -135,7 +135,7 @@ function mapCanonicalEvent(
     sourceLatencyMs: record.sourceLatencyMs,
     rawReference: record.rawReference,
     normalizationVersion: record.normalizationVersion,
-    payload: record.payload,
+    payload: record.payload as unknown as CanonicalMarketDataEvent['payload'],
     persistedTimestamp: record.persistedTimestamp.toISOString(),
   });
 }
@@ -404,6 +404,7 @@ export class PrismaMarketDataRepository implements MarketDataRepository {
       marketDataHistoryQuerySchema.parse(query ?? {});
     const records = await this.client.marketDataEvent.findMany({
       where: {
+        eventId: parsedQuery.eventId,
         instrumentId: parsedQuery.instrumentId,
         ingestRunId: parsedQuery.ingestRunId,
         eventType: parsedQuery.eventType

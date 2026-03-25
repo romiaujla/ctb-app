@@ -1,5 +1,7 @@
 export {
   canonicalMarketDataEventSchema,
+  marketDataIngestionOutcomeSchema,
+  marketDataIngestionRequestSchema,
   marketDataEventTypeSchema,
   marketDataFreshnessStateSchema,
   marketDataHistoryQuerySchema,
@@ -14,14 +16,24 @@ export {
   type MarketDataEventType,
   type MarketDataFreshnessState,
   type MarketDataHistoryQuery,
+  type MarketDataIngestionOutcome,
+  type MarketDataIngestionRequest,
+  type MarketDataIngestionService,
   type MarketDataIngestDecision,
   type MarketDataIngestMode,
   type MarketDataIngestRun,
   type MarketDataIngestSnapshot,
   type MarketDataIngestStatus,
+  type MarketDataNormalizationInput,
   type MarketDataQuality,
   type MarketDataRepository,
   type PersistMarketDataInput,
   type RawMarketDataRecord,
 } from './contracts.js';
+export {
+  DefaultMarketDataIngestionService,
+  buildMarketDataEventId,
+  evaluateMarketDataFreshness,
+  normalizeMarketDataEvent,
+} from './ingestion.js';
 export { PrismaMarketDataRepository } from './repository.js';

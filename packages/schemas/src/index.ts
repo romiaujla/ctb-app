@@ -39,6 +39,123 @@ export const decimalValueSchema = z.string().regex(decimalPattern);
 export const isoTimestampSchema = z.string().datetime();
 export const currencyCodeSchema = z.string().trim().length(3).toUpperCase();
 
+export const marketDataEventTypeSchema = z.enum([
+  'quote',
+  'trade',
+  'bar',
+  'status',
+]);
+export const marketDataSessionStateSchema = z.enum([
+  'preMarket',
+  'regular',
+  'afterHours',
+  'closed',
+]);
+export const marketDataQualitySchema = z.enum([
+  'valid',
+  'partial',
+  'stale',
+  'invalid',
+]);
+export const marketDataFreshnessStateSchema = z.enum([
+  'ready',
+  'delayed',
+  'stale',
+  'partial',
+  'invalid',
+  'unavailable',
+]);
+
+export const marketDataQuotePayloadSchema = z.object({
+  bidPrice: decimalValueSchema.nullable(),
+  askPrice: decimalValueSchema.nullable(),
+  bidSize: z.number().int().nonnegative().nullable(),
+  askSize: z.number().int().nonnegative().nullable(),
+  midPrice: decimalValueSchema.nullable(),
+  lastTradePrice: decimalValueSchema.nullable(),
+});
+
+export const marketDataTradePayloadSchema = z.object({
+  tradePrice: decimalValueSchema.nullable(),
+  tradeSize: z.number().int().nonnegative().nullable(),
+  tradeCondition: z.string().min(1).nullable(),
+  exchange: z.string().min(1).nullable(),
+});
+
+export const marketDataBarPayloadSchema = z.object({
+  open: decimalValueSchema.nullable(),
+  high: decimalValueSchema.nullable(),
+  low: decimalValueSchema.nullable(),
+  close: decimalValueSchema.nullable(),
+  volume: z.number().int().nonnegative().nullable(),
+  vwap: decimalValueSchema.nullable(),
+  barStartTimestamp: isoTimestampSchema.nullable(),
+  barEndTimestamp: isoTimestampSchema.nullable(),
+  barResolution: z.string().min(1).nullable(),
+});
+
+export const marketDataStatusPayloadSchema = z.object({
+  tradingStatus: z.string().min(1).nullable(),
+  haltReason: z.string().min(1).nullable(),
+  tradable: z.boolean().nullable(),
+});
+
+export const marketDataPayloadSchema = z.discriminatedUnion('eventType', [
+  z.object({
+    eventType: z.literal('quote'),
+    payload: marketDataQuotePayloadSchema,
+  }),
+  z.object({
+    eventType: z.literal('trade'),
+    payload: marketDataTradePayloadSchema,
+  }),
+  z.object({
+    eventType: z.literal('bar'),
+    payload: marketDataBarPayloadSchema,
+  }),
+  z.object({
+    eventType: z.literal('status'),
+    payload: marketDataStatusPayloadSchema,
+  }),
+]);
+
+export const canonicalMarketDataEventSchema = z
+  .object({
+    eventId: z.string().min(1),
+    instrumentId: z.string().min(1),
+    symbol: z.string().min(1),
+    provider: z.string().min(1),
+    providerEventId: z.string().min(1).nullable(),
+    providerTimestamp: isoTimestampSchema,
+    observedTimestamp: isoTimestampSchema,
+    normalizedTimestamp: isoTimestampSchema,
+    sessionState: marketDataSessionStateSchema,
+    quality: marketDataQualitySchema,
+    freshnessState: marketDataFreshnessStateSchema,
+    sourceLatencyMs: z.number().int().nonnegative().nullable(),
+    rawReference: z.string().min(1).nullable(),
+    normalizationVersion: z.string().min(1),
+  })
+  .and(marketDataPayloadSchema);
+
+export const marketDataNormalizationInputSchema = z
+  .object({
+    ingestRunId: z.string().min(1),
+    rawRecordId: z.string().min(1),
+    provider: z.string().min(1),
+    providerSymbol: z.string().min(1).nullable(),
+    providerEventId: z.string().min(1).nullable(),
+    instrumentId: z.string().min(1),
+    symbol: z.string().min(1),
+    providerTimestamp: isoTimestampSchema,
+    observedTimestamp: isoTimestampSchema,
+    normalizedTimestamp: isoTimestampSchema.optional(),
+    sessionState: marketDataSessionStateSchema,
+    rawReference: z.string().min(1).nullable(),
+    normalizationVersion: z.string().min(1),
+  })
+  .and(marketDataPayloadSchema);
+
 export const simulationAccountStatusSchema = z.enum([
   'active',
   'paused',
