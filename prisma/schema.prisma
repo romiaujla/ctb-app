@@ -45,11 +45,152 @@ enum SimulatorEventType {
   ACCOUNT_ADJUSTED
 }
 
+enum MarketDataIngestMode {
+  POLL
+  SUBSCRIPTION
+  MANUAL
+}
+
+enum MarketDataIngestStatus {
+  RUNNING
+  SUCCEEDED
+  PARTIAL
+  FAILED
+}
+
+enum MarketDataEventType {
+  QUOTE
+  TRADE
+  BAR
+  STATUS
+}
+
+enum MarketDataSessionState {
+  PRE_MARKET
+  REGULAR
+  AFTER_HOURS
+  CLOSED
+}
+
+enum MarketDataQuality {
+  VALID
+  PARTIAL
+  STALE
+  INVALID
+}
+
+enum MarketDataFreshnessState {
+  READY
+  DELAYED
+  STALE
+  PARTIAL
+  INVALID
+  UNAVAILABLE
+}
+
+enum MarketDataIngestDecisionType {
+  ACCEPTED
+  DUPLICATE
+  REJECTED
+}
+
 model RuntimeHeartbeat {
   id        String   @id @default(cuid())
   service   String
   startedAt DateTime
   createdAt DateTime @default(now())
+}
+
+model MarketDataIngestRun {
+  id                   String                     @id
+  provider             String
+  ingestMode           MarketDataIngestMode
+  status               MarketDataIngestStatus
+  adapterVersion       String
+  startedAt            DateTime
+  completedAt          DateTime?
+  requestedInstruments Json
+  notes                String?
+  createdAt            DateTime                   @default(now())
+  updatedAt            DateTime                   @updatedAt
+  rawRecords           RawMarketDataRecord[]
+  canonicalEvents      MarketDataEvent[]
+  ingestDecisions      MarketDataIngestDecision[]
+
+  @@index([provider, startedAt])
+  @@index([status, startedAt])
+}
+
+model RawMarketDataRecord {
+  id                String                    @id
+  ingestRunId       String
+  provider          String
+  providerSymbol    String?
+  providerEventId   String?
+  receivedTimestamp DateTime
+  providerTimestamp DateTime?
+  adapterVersion    String
+  payload           Json
+  createdAt         DateTime                  @default(now())
+  ingestRun         MarketDataIngestRun       @relation(fields: [ingestRunId], references: [id], onDelete: Restrict)
+  canonicalEvents   MarketDataEvent[]
+  ingestDecisions   MarketDataIngestDecision[]
+
+  @@index([ingestRunId, receivedTimestamp])
+  @@index([provider, providerEventId])
+}
+
+model MarketDataEvent {
+  id                   String                    @id
+  eventId              String                    @unique
+  ingestRunId          String
+  rawRecordId          String?
+  eventType            MarketDataEventType
+  instrumentId         String
+  symbol               String
+  provider             String
+  providerEventId      String?
+  providerTimestamp    DateTime
+  observedTimestamp    DateTime
+  normalizedTimestamp  DateTime
+  sessionState         MarketDataSessionState
+  quality              MarketDataQuality
+  freshnessState       MarketDataFreshnessState
+  sourceLatencyMs      Int?
+  rawReference         String?
+  normalizationVersion String
+  payload              Json
+  persistedTimestamp   DateTime
+  createdAt            DateTime                  @default(now())
+  ingestRun            MarketDataIngestRun       @relation(fields: [ingestRunId], references: [id], onDelete: Restrict)
+  rawRecord            RawMarketDataRecord?      @relation(fields: [rawRecordId], references: [id], onDelete: SetNull)
+  ingestDecisions      MarketDataIngestDecision[]
+
+  @@index([instrumentId, normalizedTimestamp])
+  @@index([eventType, normalizedTimestamp])
+  @@index([ingestRunId, normalizedTimestamp])
+  @@index([provider, providerEventId])
+}
+
+model MarketDataIngestDecision {
+  id             String                       @id
+  ingestRunId    String
+  rawRecordId    String?
+  marketDataEventId String?
+  decisionType   MarketDataIngestDecisionType
+  duplicateKey   String?
+  rejectionReason String?
+  freshnessState MarketDataFreshnessState?
+  quality        MarketDataQuality?
+  decidedTimestamp DateTime
+  createdAt      DateTime                     @default(now())
+  ingestRun      MarketDataIngestRun          @relation(fields: [ingestRunId], references: [id], onDelete: Restrict)
+  rawRecord      RawMarketDataRecord?         @relation(fields: [rawRecordId], references: [id], onDelete: SetNull)
+  marketDataEvent MarketDataEvent?            @relation(fields: [marketDataEventId], references: [id], onDelete: SetNull)
+
+  @@index([ingestRunId, decidedTimestamp])
+  @@index([decisionType, decidedTimestamp])
+  @@index([duplicateKey])
 }
 
 model SimulationAccount {
