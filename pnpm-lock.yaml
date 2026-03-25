@@ -110,6 +110,9 @@ importers:
       '@ctb/market-data':
         specifier: workspace:*
         version: link:../../packages/market-data
+      '@ctb/types':
+        specifier: workspace:*
+        version: link:../../packages/types
 
   packages/config:
     dependencies:
