@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@ctb/config": "workspace:*",
-    "@ctb/market-data": "workspace:*"
+    "@ctb/market-data": "workspace:*",
+    "@ctb/types": "workspace:*"
   }
 }
