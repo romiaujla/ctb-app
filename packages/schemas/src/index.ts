@@ -65,6 +65,17 @@ export const marketDataFreshnessStateSchema = z.enum([
   'invalid',
   'unavailable',
 ]);
+export const strategyDecisionStateSchema = z.enum([
+  'trade-intent-emitted',
+  'skipped',
+  'blocked',
+  'invalid-input',
+]);
+export const strategySignalDirectionSchema = z.enum([
+  'bullish',
+  'bearish',
+  'neutral',
+]);
 
 export const marketDataQuotePayloadSchema = z.object({
   bidPrice: decimalValueSchema.nullable(),
@@ -454,4 +465,127 @@ export const simulatorReplayVerificationSchema = z.object({
   latestSnapshotId: z.string().min(1).nullable(),
   currentViewMatched: z.boolean(),
   latestSnapshotMatched: z.boolean(),
+});
+
+const strategyMetadataValueSchema = z.union([
+  z.string(),
+  z.number(),
+  z.boolean(),
+  z.null(),
+]);
+
+export const strategyIndicatorSnapshotSchema = z.object({
+  name: z.string().min(1),
+  value: decimalValueSchema.nullable(),
+  interpretation: z.string().min(1).nullable(),
+  sourceVersion: z.string().min(1).nullable(),
+});
+
+export const strategyMarketContextSchema = z.object({
+  latestEventIds: z.array(z.string().min(1)),
+  freshnessState: marketDataFreshnessStateSchema,
+  summary: z.string().min(1),
+  indicatorSnapshots: z.array(strategyIndicatorSnapshotSchema),
+});
+
+export const strategyPortfolioContextSchema = z.object({
+  simulationAccountId: z.string().min(1),
+  cashAvailable: decimalValueSchema,
+  currentPositionQuantity: decimalValueSchema,
+  averageCostBasis: decimalValueSchema.nullable(),
+  instrumentExposure: decimalValueSchema,
+  portfolioExposure: decimalValueSchema,
+  netLiquidationValue: decimalValueSchema,
+  openIntentCount: z.number().int().min(0),
+});
+
+export const strategyRiskContextSchema = z.object({
+  maxPositionQuantity: decimalValueSchema,
+  maxCapitalAtRisk: decimalValueSchema,
+  sessionEligible: z.boolean(),
+  blockedReasons: z.array(z.string().min(1)),
+  sizingPolicyVersion: z.string().min(1),
+});
+
+export const strategyDataTrustContextSchema = z.object({
+  readinessState: marketDataFreshnessStateSchema,
+  blockedReason: z.string().min(1).nullable(),
+  normalizationVersion: z.string().min(1).nullable(),
+  replayVersion: z.string().min(1).nullable(),
+});
+
+export const strategyEvaluationInputSchema = z.object({
+  evaluationId: z.string().min(1),
+  strategyId: z.string().min(1),
+  strategyVersion: z.string().min(1),
+  evaluationTimestamp: isoTimestampSchema,
+  instrumentId: z.string().min(1),
+  symbol: z.string().min(1),
+  sessionState: marketDataSessionStateSchema,
+  marketContext: strategyMarketContextSchema,
+  portfolioContext: strategyPortfolioContextSchema,
+  riskContext: strategyRiskContextSchema,
+  dataTrust: strategyDataTrustContextSchema,
+});
+
+export const strategyInputReferenceSchema = z.object({
+  marketEventIds: z.array(z.string().min(1)),
+  simulationAccountId: z.string().min(1),
+  portfolioSnapshotId: z.string().min(1).nullable(),
+  riskPolicyVersion: z.string().min(1),
+});
+
+export const strategySignalSummarySchema = z.object({
+  signalCode: z.string().min(1),
+  direction: strategySignalDirectionSchema,
+  strength: decimalValueSchema.nullable(),
+  summary: z.string().min(1),
+});
+
+export const strategyGuardrailResultSchema = z.object({
+  guardrailCode: z.string().min(1),
+  status: z.enum(['passed', 'blocked', 'not-applicable']),
+  reason: z.string().min(1).nullable(),
+  detail: z.string().min(1).nullable(),
+});
+
+export const strategyTradeIntentSchema = z.object({
+  tradeIntentId: z.string().min(1),
+  strategyEvaluationId: z.string().min(1),
+  strategyId: z.string().min(1),
+  strategyVersion: z.string().min(1),
+  evaluationCorrelationId: z.string().min(1),
+  instrumentId: z.string().min(1),
+  symbol: z.string().min(1),
+  side: simulatedOrderSideSchema,
+  requestedQuantity: decimalValueSchema,
+  orderType: simulatedOrderTypeSchema,
+  intentTimestamp: isoTimestampSchema,
+  intentMetadata: z.record(strategyMetadataValueSchema),
+});
+
+export const strategyEvidenceRecordSchema = z.object({
+  evaluationId: z.string().min(1),
+  strategyId: z.string().min(1),
+  strategyVersion: z.string().min(1),
+  evaluationTimestamp: isoTimestampSchema,
+  inputReference: strategyInputReferenceSchema,
+  decisionState: strategyDecisionStateSchema,
+  signalSummary: z.array(strategySignalSummarySchema),
+  guardrailSummary: z.array(strategyGuardrailResultSchema),
+  decisionReason: z.string().min(1),
+  tradeIntentReference: z.string().min(1).nullable(),
+});
+
+export const strategyEvaluationRecordSchema = z.object({
+  input: strategyEvaluationInputSchema,
+  evidence: strategyEvidenceRecordSchema,
+  tradeIntent: strategyTradeIntentSchema.nullable(),
+});
+
+export const strategyEvaluationQueryOptionsSchema = z.object({
+  limit: z.number().int().positive().max(100).optional(),
+  strategyId: z.string().min(1).optional(),
+  instrumentId: z.string().min(1).optional(),
+  decisionState: strategyDecisionStateSchema.optional(),
 });
