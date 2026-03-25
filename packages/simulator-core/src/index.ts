@@ -7,3 +7,4 @@ export {
 } from './contracts.js';
 export { PrismaSimulatorAccountingRepository } from './repository.js';
 export { replaySimulatorState, verifyDeterministicReplay } from './replay.js';
+export { PrismaStrategyEvaluationRepository } from './strategy-repository.js';

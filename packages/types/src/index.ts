@@ -183,6 +183,12 @@ export type SimulatorPersistenceStorageKind =
   | 'current-state'
   | 'point-in-time-snapshot';
 export type SimulatorPersistenceTruthKind = 'system-of-record' | 'derived-view';
+export type StrategyDecisionState =
+  | 'trade-intent-emitted'
+  | 'skipped'
+  | 'blocked'
+  | 'invalid-input';
+export type StrategySignalDirection = 'bullish' | 'bearish' | 'neutral';
 
 export interface SimulationAccount {
   simulationAccountId: string;
@@ -429,4 +435,130 @@ export interface SimulatorReplayVerification {
   latestSnapshotId: string | null;
   currentViewMatched: boolean;
   latestSnapshotMatched: boolean;
+}
+
+export interface StrategyIndicatorSnapshot {
+  name: string;
+  value: DecimalValue | null;
+  interpretation: string | null;
+  sourceVersion: string | null;
+}
+
+export interface StrategyMarketContext {
+  latestEventIds: string[];
+  freshnessState: MarketDataFreshnessState;
+  summary: string;
+  indicatorSnapshots: StrategyIndicatorSnapshot[];
+}
+
+export interface StrategyPortfolioContext {
+  simulationAccountId: string;
+  cashAvailable: DecimalValue;
+  currentPositionQuantity: DecimalValue;
+  averageCostBasis: DecimalValue | null;
+  instrumentExposure: DecimalValue;
+  portfolioExposure: DecimalValue;
+  netLiquidationValue: DecimalValue;
+  openIntentCount: number;
+}
+
+export interface StrategyRiskContext {
+  maxPositionQuantity: DecimalValue;
+  maxCapitalAtRisk: DecimalValue;
+  sessionEligible: boolean;
+  blockedReasons: string[];
+  sizingPolicyVersion: string;
+}
+
+export interface StrategyDataTrustContext {
+  readinessState: MarketDataFreshnessState;
+  blockedReason: string | null;
+  normalizationVersion: string | null;
+  replayVersion: string | null;
+}
+
+export interface StrategyEvaluationInput {
+  evaluationId: string;
+  strategyId: string;
+  strategyVersion: string;
+  evaluationTimestamp: IsoTimestamp;
+  instrumentId: string;
+  symbol: string;
+  sessionState: MarketDataSessionState;
+  marketContext: StrategyMarketContext;
+  portfolioContext: StrategyPortfolioContext;
+  riskContext: StrategyRiskContext;
+  dataTrust: StrategyDataTrustContext;
+}
+
+export interface StrategyInputReference {
+  marketEventIds: string[];
+  simulationAccountId: string;
+  portfolioSnapshotId: string | null;
+  riskPolicyVersion: string;
+}
+
+export interface StrategySignalSummary {
+  signalCode: string;
+  direction: StrategySignalDirection;
+  strength: DecimalValue | null;
+  summary: string;
+}
+
+export interface StrategyGuardrailResult {
+  guardrailCode: string;
+  status: 'passed' | 'blocked' | 'not-applicable';
+  reason: string | null;
+  detail: string | null;
+}
+
+export interface StrategyTradeIntent {
+  tradeIntentId: string;
+  strategyEvaluationId: string;
+  strategyId: string;
+  strategyVersion: string;
+  evaluationCorrelationId: string;
+  instrumentId: string;
+  symbol: string;
+  side: SimulatedOrderSide;
+  requestedQuantity: DecimalValue;
+  orderType: SimulatedOrderType;
+  intentTimestamp: IsoTimestamp;
+  intentMetadata: Record<string, string | number | boolean | null>;
+}
+
+export interface StrategyEvidenceRecord {
+  evaluationId: string;
+  strategyId: string;
+  strategyVersion: string;
+  evaluationTimestamp: IsoTimestamp;
+  inputReference: StrategyInputReference;
+  decisionState: StrategyDecisionState;
+  signalSummary: StrategySignalSummary[];
+  guardrailSummary: StrategyGuardrailResult[];
+  decisionReason: string;
+  tradeIntentReference: string | null;
+}
+
+export interface StrategyEvaluationRecord {
+  input: StrategyEvaluationInput;
+  evidence: StrategyEvidenceRecord;
+  tradeIntent: StrategyTradeIntent | null;
+}
+
+export interface StrategyEvaluationQueryOptions {
+  limit?: number;
+  strategyId?: string;
+  instrumentId?: string;
+  decisionState?: StrategyDecisionState;
+}
+
+export interface StrategyEvaluationRepository {
+  persistEvaluation(
+    input: StrategyEvaluationRecord,
+  ): Promise<StrategyEvaluationRecord>;
+  getEvaluation(evaluationId: string): Promise<StrategyEvaluationRecord | null>;
+  getRecentEvaluations(
+    options?: StrategyEvaluationQueryOptions,
+  ): Promise<StrategyEvaluationRecord[]>;
 }

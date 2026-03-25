@@ -94,6 +94,13 @@ enum MarketDataIngestDecisionType {
   REJECTED
 }
 
+enum StrategyDecisionState {
+  TRADE_INTENT_EMITTED
+  SKIPPED
+  BLOCKED
+  INVALID_INPUT
+}
+
 model RuntimeHeartbeat {
   id        String   @id @default(cuid())
   service   String
@@ -318,4 +325,50 @@ model PortfolioSnapshot {
 
   @@unique([simulationAccountId, sourceEventId])
   @@index([simulationAccountId, timestamp])
+}
+
+model StrategyEvaluation {
+  id                  String               @id
+  strategyId          String
+  strategyVersion     String
+  evaluationTimestamp DateTime
+  instrumentId        String
+  symbol              String
+  sessionState        MarketDataSessionState
+  marketContext       Json
+  portfolioContext    Json
+  riskContext         Json
+  dataTrust           Json
+  inputReference      Json
+  decisionState       StrategyDecisionState
+  decisionReason      String
+  signalSummary       Json
+  guardrailSummary    Json
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  tradeIntent         StrategyTradeIntent?
+
+  @@index([strategyId, strategyVersion, evaluationTimestamp])
+  @@index([instrumentId, evaluationTimestamp])
+  @@index([decisionState, evaluationTimestamp])
+}
+
+model StrategyTradeIntent {
+  id                    String             @id
+  strategyEvaluationId  String             @unique
+  strategyId            String
+  strategyVersion       String
+  evaluationCorrelationId String
+  instrumentId          String
+  symbol                String
+  side                  SimulatedOrderSide
+  requestedQuantity     Decimal            @db.Decimal(20, 8)
+  orderType             SimulatedOrderType
+  intentTimestamp       DateTime
+  intentMetadata        Json
+  createdAt             DateTime           @default(now())
+  strategyEvaluation    StrategyEvaluation @relation(fields: [strategyEvaluationId], references: [id], onDelete: Restrict)
+
+  @@index([strategyId, strategyVersion, intentTimestamp])
+  @@index([instrumentId, intentTimestamp])
 }
