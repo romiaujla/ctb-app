@@ -46,3 +46,8 @@ export function startSimulatorWorkerScaffold(
 if (import.meta.url === `file://${process.argv[1]}`) {
   startSimulatorWorkerScaffold();
 }
+
+export {
+  createSimulatorWorkerStrategyEvaluator,
+  evaluateSimulatorWorkerStrategy,
+} from './strategy.js';

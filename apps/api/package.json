@@ -11,6 +11,7 @@
     "@ctb/config": "workspace:*",
     "@ctb/market-data": "workspace:*",
     "@ctb/schemas": "workspace:*",
+    "@ctb/simulator-core": "workspace:*",
     "@ctb/types": "workspace:*",
     "@prisma/client": "^6.7.0"
   }
