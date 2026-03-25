@@ -597,3 +597,83 @@ export const strategyEvaluationRequestSchema = z.object({
   strategyVersion: z.string().min(1).optional(),
   evaluationTimestamp: isoTimestampSchema.optional(),
 });
+
+export const operatorStatusLevelSchema = z.enum([
+  'healthy',
+  'warning',
+  'degraded',
+  'empty',
+  'unavailable',
+]);
+
+export const operatorSectionStatusSchema = z.object({
+  key: z.string().min(1),
+  label: z.string().min(1),
+  status: operatorStatusLevelSchema,
+  summary: z.string().min(1),
+  detailPath: z.string().min(1).nullable(),
+  updatedAt: isoTimestampSchema.nullable(),
+});
+
+export const operatorOverviewSchema = z.object({
+  overallStatus: operatorStatusLevelSchema,
+  generatedAt: isoTimestampSchema,
+  docsUrl: z.string().min(1),
+  sections: z.array(operatorSectionStatusSchema).min(1),
+});
+
+export const controlPlaneWorkflowStatusSchema = z.object({
+  key: z.string().min(1),
+  label: z.string().min(1),
+  status: operatorStatusLevelSchema,
+  summary: z.string().min(1),
+  updatedAt: isoTimestampSchema.nullable(),
+});
+
+export const simulatorOperatorSummarySchema = z.object({
+  status: operatorStatusLevelSchema,
+  simulationAccountId: z.string().min(1).nullable(),
+  accountStatus: simulationAccountStatusSchema.nullable(),
+  netLiquidationValue: decimalValueSchema.nullable(),
+  openPositionCount: z.number().int().min(0),
+  openOrderCount: z.number().int().min(0),
+  recentFillCount: z.number().int().min(0),
+  summary: z.string().min(1),
+  updatedAt: isoTimestampSchema.nullable(),
+});
+
+export const strategyActiveSummarySchema = z.object({
+  status: operatorStatusLevelSchema,
+  strategyId: z.string().min(1).nullable(),
+  strategyVersion: z.string().min(1).nullable(),
+  latestDecisionState: strategyDecisionStateSchema.nullable(),
+  latestDecisionReason: z.string().min(1),
+  updatedAt: isoTimestampSchema.nullable(),
+});
+
+export const strategyReviewSummarySchema = z.object({
+  status: operatorStatusLevelSchema,
+  reviewWindowSize: z.number().int().min(0),
+  emittedCount: z.number().int().min(0),
+  skippedCount: z.number().int().min(0),
+  blockedCount: z.number().int().min(0),
+  invalidCount: z.number().int().min(0),
+  recentReasons: z.array(z.string().min(1)),
+  updatedAt: isoTimestampSchema.nullable(),
+});
+
+export const reportAvailabilitySummarySchema = z.object({
+  status: operatorStatusLevelSchema,
+  latestReportDate: z.string().min(1).nullable(),
+  latestReportUrl: z.string().min(1).nullable(),
+  historyUrl: z.string().min(1).nullable(),
+  summary: z.string().min(1),
+  updatedAt: isoTimestampSchema.nullable(),
+});
+
+export const notificationAvailabilitySummarySchema = z.object({
+  status: operatorStatusLevelSchema,
+  unresolvedCount: z.number().int().min(0),
+  summary: z.string().min(1),
+  updatedAt: isoTimestampSchema.nullable(),
+});
