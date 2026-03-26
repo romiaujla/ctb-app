@@ -222,9 +222,7 @@ export class PrismaStrategyEvaluationRepository implements StrategyEvaluationRep
             instrumentId: input.tradeIntent.instrumentId,
             symbol: input.tradeIntent.symbol,
             side: simulatedOrderSideMap[input.tradeIntent.side],
-            requestedQuantity: new Decimal(
-              input.tradeIntent.requestedQuantity,
-            ),
+            requestedQuantity: new Decimal(input.tradeIntent.requestedQuantity),
             orderType: simulatedOrderTypeMap[input.tradeIntent.orderType],
             intentTimestamp: new Date(input.tradeIntent.intentTimestamp),
             intentMetadata: input.tradeIntent
@@ -239,9 +237,7 @@ export class PrismaStrategyEvaluationRepository implements StrategyEvaluationRep
             instrumentId: input.tradeIntent.instrumentId,
             symbol: input.tradeIntent.symbol,
             side: simulatedOrderSideMap[input.tradeIntent.side],
-            requestedQuantity: new Decimal(
-              input.tradeIntent.requestedQuantity,
-            ),
+            requestedQuantity: new Decimal(input.tradeIntent.requestedQuantity),
             orderType: simulatedOrderTypeMap[input.tradeIntent.orderType],
             intentTimestamp: new Date(input.tradeIntent.intentTimestamp),
             intentMetadata: input.tradeIntent
