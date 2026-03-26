@@ -1,7 +1,4 @@
-import prismaClientPackage from '@prisma/client';
-import type { Prisma } from '@prisma/client';
-
-const { PrismaClient } = prismaClientPackage;
+import type { Prisma, PrismaClient } from '@prisma/client';
 
 import {
   canonicalMarketDataEventSchema,

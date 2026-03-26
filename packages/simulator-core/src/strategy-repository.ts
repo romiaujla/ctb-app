@@ -1,8 +1,6 @@
-import prismaClientPackage from '@prisma/client';
+import type { Prisma, PrismaClient } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime/library';
-import type { Prisma } from '@prisma/client';
 
-const { PrismaClient } = prismaClientPackage;
 import {
   strategyEvaluationQueryOptionsSchema,
   strategyEvaluationRecordSchema,
