@@ -36,7 +36,9 @@ import type {
   StrategyEvaluationRepository,
   StrategyReviewSummary,
 } from '@ctb/types';
-import { PrismaClient } from '@prisma/client';
+import prismaClientPackage from '@prisma/client';
+
+const { PrismaClient } = prismaClientPackage;
 
 interface ApiControlPlaneState {
   dependencies: ServiceRuntimeDescriptor['dependencies'];

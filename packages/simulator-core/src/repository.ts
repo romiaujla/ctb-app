@@ -1,4 +1,6 @@
-import { Prisma, PrismaClient } from '@prisma/client';
+import type { Prisma, PrismaClient } from '@prisma/client';
+import { Decimal } from '@prisma/client/runtime/library';
+
 import {
   persistSimulatorAccountingInputSchema,
   portfolioSchema,
@@ -28,7 +30,7 @@ import type {
 
 type PersistenceClient = PrismaClient | Prisma.TransactionClient;
 
-const decimal = (value: string) => new Prisma.Decimal(value);
+const decimal = (value: string) => new Decimal(value);
 
 const simulationAccountStatusMap = {
   active: 'ACTIVE',
@@ -68,7 +70,7 @@ const simulatorEventTypeMap = {
   'account-adjusted': 'ACCOUNT_ADJUSTED',
 } as const;
 
-function fromDecimal(value: Prisma.Decimal): string {
+function fromDecimal(value: Decimal): string {
   return value.toFixed();
 }
 
